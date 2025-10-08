@@ -99,8 +99,8 @@ async function handleGetFiles(req: NextApiRequest, res: NextApiResponse) {
       filteredFiles = filteredFiles.filter(file => file.category === category);
     }
 
-    // Apply sorting
-    filteredFiles.sort((a, b) => {
+    // Apply sorting (create a new sorted array to avoid mutation)
+    filteredFiles = [...filteredFiles].sort((a, b) => {
       let aValue: any, bValue: any;
       
       switch (sortBy) {

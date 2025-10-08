@@ -249,7 +249,7 @@ export default async function handler(
             price: item.price
           }))
         })),
-        productPerformance: productPerformance.sort((a, b) => b.sales - a.sales).slice(0, 5)
+        productPerformance: [...productPerformance].sort((a, b) => b.sales - a.sales).slice(0, 5)
       }
 
       res.status(200).json({ stats })
