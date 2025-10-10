@@ -9,9 +9,11 @@ const nextConfig = {
   },
 
   // Allow Replit domain for development
-  allowedDevOrigins: process.env.REPLIT_DOMAINS 
-    ? process.env.REPLIT_DOMAINS.split(',').map(domain => `https://${domain}`)
-    : undefined,
+  allowedDevOrigins: process.env.REPLIT_DEV_DOMAIN 
+    ? [`https://${process.env.REPLIT_DEV_DOMAIN}`]
+    : (process.env.REPLIT_DOMAINS 
+      ? process.env.REPLIT_DOMAINS.split(',').map(domain => `https://${domain}`)
+      : []),
 
   // Image optimization
   images: {
