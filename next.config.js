@@ -11,7 +11,7 @@ const nextConfig = {
   // Allow Replit domain for development
   allowedDevOrigins: process.env.REPLIT_DOMAINS 
     ? process.env.REPLIT_DOMAINS.split(',').map(domain => `https://${domain}`)
-    : [],
+    : undefined,
 
   // Image optimization
   images: {
@@ -98,25 +98,20 @@ const nextConfig = {
     ]
   },
 
-  // Bundle analyzer (enable with ANALYZE=true)
-  ...(process.env.ANALYZE === 'true' && {
-    webpack: (config, { isServer }) => {
-      if (!isServer) {
-        const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
-        config.plugins.push(
-          new BundleAnalyzerPlugin({
-            analyzerMode: 'static',
-            openAnalyzer: false,
-            reportFilename: '../bundle-analyzer-report.html',
-          })
-        )
-      }
-      return config
-    },
-  }),
-
   // Webpack optimizations
   webpack: (config, { dev, isServer }) => {
+    // Bundle analyzer (enable with ANALYZE=true)
+    if (process.env.ANALYZE === 'true' && !isServer) {
+      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+      config.plugins.push(
+        new BundleAnalyzerPlugin({
+          analyzerMode: 'static',
+          openAnalyzer: false,
+          reportFilename: '../bundle-analyzer-report.html',
+        })
+      )
+    }
+
     // Production optimizations
     if (!dev) {
       // Tree shaking optimization

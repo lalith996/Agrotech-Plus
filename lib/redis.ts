@@ -89,18 +89,27 @@ export class CacheService {
         try {
           const redisResult = await this.redis.get(key);
           if (redisResult) {
-            const parsed = JSON.parse(redisResult) as T;
-            
-            // Store in memory cache for next time
-            if (!opts.skipMemory) {
+            try {
+              const parsed = JSON.parse(redisResult) as T;
+              
+              // Store in memory cache for next time
+              if (!opts.skipMemory) {
+                try {
+                  this.memoryCache.set(key, parsed, opts.memoryTTL || 300);
+                } catch (memoryError) {
+                  // Memory cache set failed, continue without it
+                }
+              }
+              
+              return parsed;
+            } catch (parseError) {
+              // JSON parse failed, invalidate corrupted cache entry and fall back to fetch
               try {
-                this.memoryCache.set(key, parsed, opts.memoryTTL || 300);
-              } catch (memoryError) {
-                // Memory cache set failed, continue without it
+                await this.redis.del(key);
+              } catch (delError) {
+                // Deletion failed, continue to fetch
               }
             }
-            
-            return parsed;
           }
         } catch (redisError) {
           // Redis get failed, falling back to fetch
