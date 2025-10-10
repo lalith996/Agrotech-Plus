@@ -43,21 +43,21 @@ export class CacheService {
   private redis: Redis;
   private memoryCache: NodeCache;
 
-  constructor() {
-    this.redis = redis;
-    this.memoryCache = memoryCache;
+  constructor(redisInstance?: Redis, memoryCacheInstance?: NodeCache) {
+    this.redis = redisInstance || redis;
+    this.memoryCache = memoryCacheInstance || memoryCache;
     
     // Handle Redis connection events
     this.redis.on('connect', () => {
-      console.log('Redis connected');
+      // Redis connected
     });
     
     this.redis.on('error', (error) => {
-      console.error('Redis error:', error);
+      // Redis error
     });
     
     this.redis.on('close', () => {
-      console.log('Redis connection closed');
+      // Redis connection closed
     });
   }
 
@@ -74,9 +74,13 @@ export class CacheService {
     try {
       // Level 1: Memory cache (fastest)
       if (!opts.skipMemory) {
-        const memoryResult = this.memoryCache.get<T>(key);
-        if (memoryResult !== undefined) {
-          return memoryResult;
+        try {
+          const memoryResult = this.memoryCache.get<T>(key);
+          if (memoryResult !== undefined) {
+            return memoryResult;
+          }
+        } catch (memoryError) {
+          // Memory cache error, fall back to L2
         }
       }
 
@@ -89,13 +93,17 @@ export class CacheService {
             
             // Store in memory cache for next time
             if (!opts.skipMemory) {
-              this.memoryCache.set(key, parsed, opts.memoryTTL || 300);
+              try {
+                this.memoryCache.set(key, parsed, opts.memoryTTL || 300);
+              } catch (memoryError) {
+                // Memory cache set failed, continue without it
+              }
             }
             
             return parsed;
           }
         } catch (redisError) {
-          console.warn('Redis get failed, falling back to fetch:', redisError);
+          // Redis get failed, falling back to fetch
         }
       }
 
@@ -109,15 +117,19 @@ export class CacheService {
         try {
           const redisPromise = this.redis.setex(key, opts.redisTTL || 3600, JSON.stringify(fresh));
           if (redisPromise && typeof redisPromise.catch === 'function') {
-            cachePromises.push(redisPromise.catch(error => console.warn('Redis set failed:', error)));
+            cachePromises.push(redisPromise.catch(error => { /* Redis set failed */ }));
           }
         } catch (error) {
-          console.warn('Redis set failed:', error);
+          // Redis set failed
         }
       }
 
       if (!opts.skipMemory) {
-        this.memoryCache.set(key, fresh, opts.memoryTTL || 300);
+        try {
+          this.memoryCache.set(key, fresh, opts.memoryTTL || 300);
+        } catch (memoryError) {
+          // Memory cache set failed, continue without it
+        }
       }
 
       // Don't wait for caching to complete
@@ -125,7 +137,6 @@ export class CacheService {
 
       return fresh;
     } catch (error) {
-      console.error('Cache get error:', error);
       throw error;
     }
   }
@@ -152,10 +163,10 @@ export class CacheService {
       try {
         const redisPromise = this.redis.setex(key, opts.redisTTL || 3600, JSON.stringify(value));
         if (redisPromise && typeof redisPromise.catch === 'function') {
-          cachePromises.push(redisPromise.catch(error => console.warn('Redis set failed:', error)));
+          cachePromises.push(redisPromise.catch(error => { /* Redis set failed */ }));
         }
       } catch (error) {
-        console.warn('Redis set failed:', error);
+        // Redis set failed
       }
     }
 
@@ -175,10 +186,10 @@ export class CacheService {
     try {
       const redisPromise = this.redis.del(key);
       if (redisPromise && typeof redisPromise.catch === 'function') {
-        deletePromises.push(redisPromise.catch(error => console.warn('Redis delete failed:', error)));
+        deletePromises.push(redisPromise.catch(error => { /* Redis delete failed */ }));
       }
     } catch (error) {
-      console.warn('Redis delete failed:', error);
+      // Redis delete failed
     }
 
     await Promise.all(deletePromises);
@@ -198,7 +209,7 @@ export class CacheService {
         await this.redis.del(...keys);
       }
     } catch (error) {
-      console.warn('Redis invalidate failed:', error);
+      // Redis invalidate failed
     }
   }
 

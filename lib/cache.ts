@@ -438,7 +438,7 @@ export class EnhancedCache {
     try {
       await cacheService.delete(key);
     } catch (error) {
-      console.warn('Redis delete failed, using fallback:', error);
+      // Redis delete failed, using fallback
     }
     this.fallbackCache.delete(key);
   }
@@ -447,7 +447,7 @@ export class EnhancedCache {
     try {
       await cacheService.invalidate(pattern);
     } catch (error) {
-      console.warn('Redis invalidate failed, clearing fallback:', error);
+      // Redis invalidate failed, clearing fallback
     }
     this.fallbackCache.clear();
   }
@@ -460,19 +460,19 @@ export class EnhancedCache {
   setSync(key: string, data: any, ttlSeconds: number = 300): void {
     this.fallbackCache.set(key, data, ttlSeconds);
     // Async set to Redis (fire and forget)
-    this.set(key, data, ttlSeconds).catch(console.warn);
+    this.set(key, data, ttlSeconds).catch(() => {});
   }
 
   deleteSync(key: string): void {
     this.fallbackCache.delete(key);
     // Async delete from Redis (fire and forget)
-    this.delete(key).catch(console.warn);
+    this.delete(key).catch(() => {});
   }
 
   clear(): void {
     this.fallbackCache.clear();
     // Async clear Redis (fire and forget)
-    this.invalidate('*').catch(console.warn);
+    this.invalidate('*').catch(() => {});
   }
 
   cleanup(): void {
@@ -554,7 +554,7 @@ export const cacheHelpers = {
       
       await cacheService.warmCache(warmupData);
     } catch (error) {
-      console.warn('Cache warmup failed:', error);
+      // Cache warmup failed
     }
   }
 };

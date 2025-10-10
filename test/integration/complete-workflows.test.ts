@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from '@jest/globals'
+import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest'
 import { createMocks } from 'node-mocks-http'
 import { getServerSession } from 'next-auth'
 
@@ -11,11 +11,11 @@ import qcSubmitHandler from '../../pages/api/admin/qc/submit'
 import analyticsHandler from '../../pages/api/admin/analytics'
 
 // Mock NextAuth
-jest.mock('next-auth', () => ({
-  getServerSession: jest.fn()
+vi.mock('next-auth', () => ({
+  getServerSession: vi.fn()
 }))
 
-const mockGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>
+const mockGetServerSession = getServerSession as any
 
 describe('Complete User Workflows Integration Tests', () => {
   let testUser: any

@@ -1,4 +1,4 @@
-import { describe, it, expect } from '@jest/globals'
+import { describe, it, expect, vi } from 'vitest'
 import { render } from '@testing-library/react'
 import { axe, toHaveNoViolations } from 'jest-axe'
 
@@ -9,13 +9,13 @@ import { Input } from '../../components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
 import { ResponsiveGrid, ResponsiveContainer } from '../../components/ui/responsive-layout'
 
-// Extend Jest matchers
+// Extend matchers
 expect.extend(toHaveNoViolations)
 
 // Mock Next.js router
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   useRouter: () => ({
-    push: jest.fn(),
+    push: vi.fn(),
     pathname: '/',
     query: {},
     asPath: '/'
@@ -23,7 +23,7 @@ jest.mock('next/router', () => ({
 }))
 
 // Mock NextAuth
-jest.mock('next-auth/react', () => ({
+vi.mock('next-auth/react', () => ({
   useSession: () => ({
     data: null,
     status: 'unauthenticated'

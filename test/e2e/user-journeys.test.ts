@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from '@jest/globals'
+import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 
 // Note: This would typically use Playwright or Cypress for actual E2E testing
 // For now, we'll create a mock E2E test structure that demonstrates the testing approach

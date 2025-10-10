@@ -41,10 +41,7 @@ describe('Cache Invalidation and Expiration', () => {
       })
     };
 
-    (Redis as any).mockImplementation(() => mockRedis);
-    (NodeCache as any).mockImplementation(() => mockMemoryCache);
-
-    cacheService = new CacheService();
+    cacheService = new CacheService(mockRedis as any, mockMemoryCache as any);
   });
 
   afterEach(async () => {

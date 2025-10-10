@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { PrismaClient, SubscriptionStatus, DeliveryFrequency } from '@prisma/client'
 import { mockDeep, mockReset, DeepMockProxy } from 'jest-mock-extended'
 
 // Mock Prisma
 const prismaMock = mockDeep<PrismaClient>()
-jest.mock('@/lib/prisma', () => ({
+vi.mock('@/lib/prisma', () => ({
   prisma: prismaMock,
 }))
 
