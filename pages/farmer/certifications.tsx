@@ -48,7 +48,7 @@ const FarmerCertificationsPage = () => {
         setCertifications(data);
       } catch (err) {
         setError('Failed to load certifications.');
-        console.error(err);
+        // console.error(err);
       } finally {
         setIsLoading(false);
       }
@@ -105,7 +105,7 @@ const FarmerCertificationsPage = () => {
 
     } catch (err) {
       setError('Failed to create certification.');
-      console.error(err);
+      // console.error(err);
     } finally {
       setIsSubmitting(false);
     }

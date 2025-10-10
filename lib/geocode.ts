@@ -34,7 +34,7 @@ export async function geocodeAddress(
     });
 
     if (!response.ok) {
-      console.error(`Nominatim API error: ${response.status} ${response.statusText}`);
+      // console.error(`Nominatim API error: ${response.status} ${response.statusText}`);
       return null;
     }
 
@@ -48,10 +48,10 @@ export async function geocodeAddress(
       };
     }
 
-    console.warn(`Address not found for: ${addressString}`);
+    // console.warn(`Address not found for: ${addressString}`);
     return null;
   } catch (error) {
-    console.error("Geocoding failed:", error);
+    // console.error("Geocoding failed:", error);
     return null;
   }
 }

@@ -26,7 +26,7 @@ export default async function handler(
 
       res.status(200).json({ farmers })
     } catch (error) {
-      console.error("Public farmers fetch error:", error)
+      // console.error("Public farmers fetch error:", error)
       res.status(500).json({ message: "Internal server error" })
     }
   } else {

@@ -30,7 +30,7 @@ class QueryPerformanceMonitor {
       this.recordQuery(queryName, duration);
       
       if (duration > this.slowQueryThreshold) {
-        console.warn(`Slow query detected: ${queryName} took ${duration}ms`);
+        // console.warn(`Slow query detected: ${queryName} took ${duration}ms`);
       }
     };
   }
@@ -533,9 +533,9 @@ class DatabaseHealthMonitor {
 export async function connectDatabase() {
   try {
     await prisma.$connect();
-    console.log('Database connected successfully');
+    // console.log('Database connected successfully');
   } catch (error) {
-    console.error('Database connection failed:', error);
+    // console.error('Database connection failed:', error);
     throw error;
   }
 }
@@ -543,9 +543,9 @@ export async function connectDatabase() {
 export async function disconnectDatabase() {
   try {
     await prisma.$disconnect();
-    console.log('Database disconnected successfully');
+    // console.log('Database disconnected successfully');
   } catch (error) {
-    console.error('Database disconnection failed:', error);
+    // console.error('Database disconnection failed:', error);
   }
 }
 

@@ -37,7 +37,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, fileId: stri
 
     res.status(200).json({ success: true, file });
   } catch (error) {
-    console.error('Get file error:', error);
+    // console.error('Get file error:', error);
     res.status(500).json({ error: 'Failed to retrieve file' });
   }
 }
@@ -52,7 +52,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, fileId: s
 
     res.status(200).json({ success: true, message: 'File deleted successfully' });
   } catch (error) {
-    console.error('Delete file error:', error);
+    // console.error('Delete file error:', error);
     res.status(500).json({ error: 'Failed to delete file' });
   }
 }
@@ -93,7 +93,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, fileId: s
       file: updatedFile
     });
   } catch (error) {
-    console.error('Update file error:', error);
+    // console.error('Update file error:', error);
     res.status(500).json({ error: 'Failed to update file' });
   }
 }

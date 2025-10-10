@@ -220,7 +220,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
   } catch (error) {
-    console.error('Facets error:', error);
+    // console.error('Facets error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to get facets'

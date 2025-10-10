@@ -77,7 +77,7 @@ export default function FarmersDirectory() {
       const result = await response.json()
       setFarmers(result.farmers || [])
     } catch (error) {
-      console.error("Error fetching farmers:", error)
+      // console.error("Error fetching farmers:", error)
       setFarmers([])
     } finally {
       setIsLoading(false)

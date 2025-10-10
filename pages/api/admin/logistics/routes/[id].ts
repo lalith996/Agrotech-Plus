@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(405).json({ error: 'Method not allowed' })
     }
   } catch (error) {
-    console.error('Route API error:', error)
+    // console.error('Route API error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 }
@@ -115,7 +115,7 @@ async function handleGetRoute(req: NextApiRequest, res: NextApiResponse, id: str
 
     res.json(mockRoute);
   } catch (error) {
-    console.error('Get route error:', error);
+    // console.error('Get route error:', error);
     res.status(500).json({ error: 'Failed to fetch route' });
   }
 }
@@ -141,14 +141,14 @@ async function handleUpdateRoute(req: NextApiRequest, res: NextApiResponse, id: 
       stops: stops || []
     };
 
-    console.log('Mock updating route:', updatedRoute);
+    // console.log('Mock updating route:', updatedRoute);
 
     res.json({
       success: true,
       route: updatedRoute
     });
   } catch (error) {
-    console.error('Update route error:', error);
+    // console.error('Update route error:', error);
     res.status(500).json({ error: 'Failed to update route' });
   }
 }
@@ -156,14 +156,14 @@ async function handleUpdateRoute(req: NextApiRequest, res: NextApiResponse, id: 
 async function handleDeleteRoute(req: NextApiRequest, res: NextApiResponse, id: string) {
   try {
     // Mock route deletion (in real implementation use prisma.deliveryRoute.delete)
-    console.log('Mock deleting route:', id);
+    // console.log('Mock deleting route:', id);
 
     res.json({
       success: true,
       message: 'Route deleted successfully'
     });
   } catch (error) {
-    console.error('Delete route error:', error);
+    // console.error('Delete route error:', error);
     res.status(500).json({ error: 'Failed to delete route' });
   }
 }

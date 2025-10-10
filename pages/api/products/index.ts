@@ -126,7 +126,7 @@ export default async function handler(
         },
       })
     } catch (error) {
-      console.error("Products fetch error:", error)
+      // console.error("Products fetch error:", error)
       res.status(500).json({ message: "Internal server error" })
     }
   } else if (req.method === "POST") {
@@ -156,7 +156,7 @@ export default async function handler(
 
       res.status(201).json(newProduct)
     } catch (error: any) {
-      console.error("Product creation error:", error)
+      // console.error("Product creation error:", error)
       if (error.name === "ZodError") {
         return res.status(400).json({ message: "Validation error", errors: error.errors })
       }

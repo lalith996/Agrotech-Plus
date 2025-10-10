@@ -54,7 +54,7 @@ export default async function handler(
 
       res.status(200).json({ subscriptions })
     } catch (error) {
-      console.error("Subscriptions fetch error:", error)
+      // console.error("Subscriptions fetch error:", error)
       res.status(500).json({ message: "Internal server error" })
     }
   } else if (req.method === "POST") {
@@ -127,7 +127,7 @@ export default async function handler(
         message: "Subscription created successfully",
       })
     } catch (error) {
-      console.error("Subscription creation error:", error)
+      // console.error("Subscription creation error:", error)
 
       if (error instanceof Error) {
         return res.status(400).json({ message: error.message })

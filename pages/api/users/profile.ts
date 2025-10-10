@@ -41,7 +41,7 @@ export default async function handler(
 
       res.status(200).json({ user })
     } catch (error) {
-      console.error("Profile fetch error:", error)
+      // console.error("Profile fetch error:", error)
       res.status(500).json({ message: "Internal server error" })
     }
   } else if (req.method === "PUT") {
@@ -121,7 +121,7 @@ export default async function handler(
         })
       }
     } catch (error) {
-      console.error("Profile update error:", error)
+      // console.error("Profile update error:", error)
       
       if (error instanceof Error) {
         return res.status(400).json({ message: error.message })

@@ -7,12 +7,12 @@ import { NextApiRequest, NextApiResponse } from 'next'
 // import slowDown from 'express-slow-down'
 
 const mockRateLimit = (options: any) => (req: any, res: any, next: any) => {
-  console.log('Mock rate limit:', options);
+  // console.log('Mock rate limit:', options);
   next();
 };
 
 const mockSlowDown = (options: any) => (req: any, res: any, next: any) => {
-  console.log('Mock slow down:', options);
+  // console.log('Mock slow down:', options);
   next();
 };
 
@@ -449,7 +449,7 @@ export class AuditLogger {
     }
     
     // In production, send to secure logging service
-    console.log('AUDIT:', JSON.stringify(logEntry))
+    // console.log('AUDIT:', JSON.stringify(logEntry))
   }
 
   static logSecurityEvent(event: {

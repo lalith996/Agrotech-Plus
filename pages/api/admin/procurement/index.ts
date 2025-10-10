@@ -80,7 +80,7 @@ export default async function handler(
 
       res.status(200).json({ lists: mockLists })
     } catch (error) {
-      console.error("Procurement lists fetch error:", error)
+      // console.error("Procurement lists fetch error:", error)
       res.status(500).json({ message: "Internal server error" })
     }
   } else {

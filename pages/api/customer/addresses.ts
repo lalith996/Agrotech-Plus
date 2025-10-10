@@ -37,7 +37,7 @@ export default async function handler(
 
       res.status(200).json({ addresses })
     } catch (error) {
-      console.error("Addresses fetch error:", error)
+      // console.error("Addresses fetch error:", error)
       res.status(500).json({ message: "Internal server error" })
     }
   } else if (req.method === "POST") {
@@ -67,7 +67,7 @@ export default async function handler(
 
       res.status(201).json({ address, message: "Address created successfully" })
     } catch (error: any) {
-      console.error("Address creation error:", error)
+      // console.error("Address creation error:", error)
       if (error.name === "ZodError") {
         return res.status(400).json({ message: "Validation error", errors: error.errors })
       }
@@ -116,7 +116,7 @@ export default async function handler(
 
       res.status(200).json({ address, message: "Address updated successfully" })
     } catch (error: any) {
-      console.error("Address update error:", error)
+      // console.error("Address update error:", error)
       if (error.name === "ZodError") {
         return res.status(400).json({ message: "Validation error", errors: error.errors })
       }
@@ -145,7 +145,7 @@ export default async function handler(
 
       res.status(200).json({ message: "Address deleted successfully" })
     } catch (error) {
-      console.error("Address deletion error:", error)
+      // console.error("Address deletion error:", error)
       res.status(500).json({ message: "Internal server error" })
     }
   } else {

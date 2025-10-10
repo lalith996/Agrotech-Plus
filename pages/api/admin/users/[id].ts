@@ -49,7 +49,7 @@ export default async function handler(
 
       res.status(200).json({ user });
     } catch (error) {
-      console.error("Admin user fetch error:", error);
+      // console.error("Admin user fetch error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   } else if (req.method === "PUT") {
@@ -71,7 +71,7 @@ export default async function handler(
       });
 
     } catch (error) {
-      console.error("Admin user update error:", error);
+      // console.error("Admin user update error:", error);
       res.status(500).json({ message: "Error updating user role" });
     }
   }

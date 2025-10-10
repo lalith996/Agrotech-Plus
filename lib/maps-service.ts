@@ -102,7 +102,7 @@ export class GoogleMapsService {
   constructor(apiKey?: string) {
     this.apiKey = apiKey || process.env.GOOGLE_MAPS_API_KEY || '';
     if (!this.apiKey) {
-      console.warn('Google Maps API key not provided');
+      // console.warn('Google Maps API key not provided');
     }
   }
 
@@ -131,7 +131,7 @@ export class GoogleMapsService {
         placeId: result.place_id
       }));
     } catch (error) {
-      console.error('Geocoding error:', error);
+      // console.error('Geocoding error:', error);
       throw error;
     }
   }
@@ -158,7 +158,7 @@ export class GoogleMapsService {
         placeId: result.place_id
       }));
     } catch (error) {
-      console.error('Reverse geocoding error:', error);
+      // console.error('Reverse geocoding error:', error);
       throw error;
     }
   }
@@ -238,7 +238,7 @@ export class GoogleMapsService {
         trafficInfo: this.extractTrafficInfo(route)
       };
     } catch (error) {
-      console.error('Route calculation error:', error);
+      // console.error('Route calculation error:', error);
       throw error;
     }
   }
@@ -271,7 +271,7 @@ export class GoogleMapsService {
         delayMinutes
       };
     } catch (error) {
-      console.error('Traffic info error:', error);
+      // console.error('Traffic info error:', error);
       throw error;
     }
   }
@@ -318,7 +318,7 @@ export class GoogleMapsService {
         }))
       };
     } catch (error) {
-      console.error('Distance matrix error:', error);
+      // console.error('Distance matrix error:', error);
       throw error;
     }
   }
@@ -359,7 +359,7 @@ export class GoogleMapsService {
         openingHours: result.opening_hours?.weekday_text
       };
     } catch (error) {
-      console.error('Place details error:', error);
+      // console.error('Place details error:', error);
       throw error;
     }
   }

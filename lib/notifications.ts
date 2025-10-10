@@ -13,22 +13,22 @@ export interface Notification {
 export class NotificationService {
   // Email notification (mock implementation)
   static async sendEmail(to: string, subject: string, content: string) {
-    console.log(`📧 Email to ${to}: ${subject}`)
-    console.log(content)
+    // console.log(`📧 Email to ${to}: ${subject}`)
+    // console.log(content)
     // In production, integrate with email service like SendGrid, AWS SES, etc.
     return true
   }
 
   // SMS notification (mock implementation)
   static async sendSMS(to: string, message: string) {
-    console.log(`📱 SMS to ${to}: ${message}`)
+    // console.log(`📱 SMS to ${to}: ${message}`)
     // In production, integrate with SMS service like Twilio, AWS SNS, etc.
     return true
   }
 
   // Push notification (mock implementation)
   static async sendPush(userId: string, title: string, body: string) {
-    console.log(`🔔 Push to ${userId}: ${title} - ${body}`)
+    // console.log(`🔔 Push to ${userId}: ${title} - ${body}`)
     // In production, integrate with Firebase Cloud Messaging, etc.
     return true
   }
@@ -36,7 +36,7 @@ export class NotificationService {
   // Create in-app notification
   static async createNotification(notification: Omit<Notification, 'id' | 'createdAt' | 'read'>) {
     // In production, save to database
-    console.log(`📬 Notification for ${notification.userId}: ${notification.title}`)
+    // console.log(`📬 Notification for ${notification.userId}: ${notification.title}`)
     return {
       id: `notif-${Date.now()}`,
       ...notification,

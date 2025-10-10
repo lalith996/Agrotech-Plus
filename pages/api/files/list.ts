@@ -37,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ...result
     });
   } catch (error) {
-    console.error('List files error:', error);
+    // console.error('List files error:', error);
     res.status(500).json({ error: 'Failed to list files' });
   }
 }

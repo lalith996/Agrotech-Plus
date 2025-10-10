@@ -8,7 +8,7 @@ let client;
 if (TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN) {
   client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 } else {
-  console.warn('Twilio credentials are not fully set. SMS notifications will be disabled.');
+  // console.warn('Twilio credentials are not fully set. SMS notifications will be disabled.');
 }
 
 interface SmsOptions {
@@ -18,7 +18,7 @@ interface SmsOptions {
 
 export const sendSms = async (options: SmsOptions) => {
   if (!client || !TWILIO_PHONE_NUMBER) {
-    console.log(`SMS not sent to ${options.to}: Twilio is not configured.`);
+    // console.log(`SMS not sent to ${options.to}: Twilio is not configured.`);
     return Promise.resolve();
   }
 
@@ -28,9 +28,9 @@ export const sendSms = async (options: SmsOptions) => {
       from: TWILIO_PHONE_NUMBER,
       to: options.to,
     });
-    console.log(`SMS sent to ${options.to}`);
+    // console.log(`SMS sent to ${options.to}`);
   } catch (error) {
-    console.error('Error sending SMS:', error);
+    // console.error('Error sending SMS:', error);
     // throw error;
   }
 };

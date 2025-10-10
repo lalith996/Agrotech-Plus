@@ -159,7 +159,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             metadata
           }
         } catch (error) {
-          console.error(`Failed to upload file ${file.originalname}:`, error)
+          // console.error(`Failed to upload file ${file.originalname}:`, error)
           throw new Error(`Failed to upload ${file.originalname}: ${error instanceof Error ? error.message : 'Unknown error'}`)
         }
       })
@@ -172,7 +172,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
 
   } catch (error) {
-    console.error('Upload error:', error)
+    // console.error('Upload error:', error)
     return res.status(500).json({
       success: false,
       message: error instanceof Error ? error.message : 'Internal server error'

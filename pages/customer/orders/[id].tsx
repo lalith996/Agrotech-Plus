@@ -46,7 +46,7 @@ const OrderDetailPage = () => {
         setOrder(data.order);
       } catch (err) {
         setError('Failed to load order details.');
-        console.error(err);
+        // console.error(err);
       } finally {
         setIsLoading(false);
       }

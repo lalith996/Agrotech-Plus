@@ -45,7 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
   } catch (error) {
-    console.error('Track interaction error:', error);
+    // console.error('Track interaction error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to track interaction'

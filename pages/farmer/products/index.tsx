@@ -61,7 +61,7 @@ export default function FarmerProducts() {
       const data = await response.json()
       setProducts(data.products)
     } catch (error) {
-      console.error("Error fetching products:", error)
+      // console.error("Error fetching products:", error)
     } finally {
       setIsLoading(false)
     }
@@ -81,16 +81,16 @@ export default function FarmerProducts() {
         product.id === productId ? { ...product, isActive } : product
       ))
     } catch (error) {
-      console.error("Error updating product:", error)
+      // console.error("Error updating product:", error)
     }
   }
 
   const handleDeleteProduct = (productId: string, productName: string) => {
-    console.log(`Delete product requested - ID: ${productId}, Name: ${productName}`)
+    // console.log(`Delete product requested - ID: ${productId}, Name: ${productName}`)
   }
 
   const handleEditProduct = (productId: string) => {
-    console.log(`Edit product requested - ID: ${productId}`)
+    // console.log(`Edit product requested - ID: ${productId}`)
   }
 
   const formatPrice = (price: number) => {

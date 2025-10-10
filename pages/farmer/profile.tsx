@@ -26,7 +26,7 @@ const FarmerProfile = () => {
           }
         } catch (error) {
           setError('An error occurred while fetching farmer data.');
-          console.error('Error fetching farmer data:', error);
+          // console.error('Error fetching farmer data:', error);
         } finally {
           setIsLoading(false);
         }
@@ -53,14 +53,14 @@ const FarmerProfile = () => {
       });
       if (response.ok) {
         // You can add a success message here, e.g., using a toast notification
-        console.log('Profile updated successfully');
+        // console.log('Profile updated successfully');
       } else {
         const data = await response.json();
         setError(data.message || 'Failed to update profile');
       }
     } catch (error) {
       setError('An error occurred while updating the profile.');
-      console.error('Error updating profile:', error);
+      // console.error('Error updating profile:', error);
     }
   };
 

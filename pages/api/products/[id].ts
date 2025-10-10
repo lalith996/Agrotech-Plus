@@ -49,7 +49,7 @@ export default async function handler(
       });
       res.status(200).json(updatedProduct);
     } catch (error: any) {
-      console.error("Product update error:", error);
+      // console.error("Product update error:", error);
       if (error.name === "ZodError") {
         return res
           .status(400)
@@ -64,7 +64,7 @@ export default async function handler(
       });
       res.status(200).json({ message: "Product deleted successfully" });
     } catch (error) {
-      console.error("Product deletion error:", error);
+      // console.error("Product deletion error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   } else {

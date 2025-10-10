@@ -24,7 +24,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo)
+    // console.error('Error caught by boundary:', error, errorInfo)
     
     // In production, you'd send this to an error reporting service
     // like Sentry, LogRocket, or Bugsnag
@@ -88,7 +88,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 // Hook for functional components to handle errors
 export const useErrorHandler = () => {
   return (error: Error, errorInfo?: { componentStack: string }) => {
-    console.error('Error handled:', error, errorInfo)
+    // console.error('Error handled:', error, errorInfo)
     
     // In production, send to error reporting service
     // Example: Sentry.captureException(error, { extra: errorInfo })

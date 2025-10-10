@@ -77,7 +77,7 @@ export default function FileManagement() {
       const data = await response.json()
       setFiles(data.files)
     } catch (error) {
-      console.error("Error fetching files:", error)
+      // console.error("Error fetching files:", error)
       toast.error("Failed to load files")
     } finally {
       setIsLoading(false)
@@ -126,7 +126,7 @@ export default function FileManagement() {
       setFiles(files.filter(file => file.id !== fileId))
       toast.success("File deleted successfully")
     } catch (error) {
-      console.error("Error deleting file:", error)
+      // console.error("Error deleting file:", error)
       toast.error("Failed to delete file")
     }
   }

@@ -73,7 +73,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     res.status(statusCode).json(healthCheck)
 
   } catch (error) {
-    console.error('Health check error:', error)
+    // console.error('Health check error:', error)
     
     const errorHealthCheck: HealthCheck = {
       status: 'unhealthy',

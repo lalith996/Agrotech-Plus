@@ -85,7 +85,7 @@ export default function Orders() {
       setOrders(data.orders)
       setPagination(data.pagination)
     } catch (error) {
-      console.error("Error fetching orders:", error)
+      // console.error("Error fetching orders:", error)
     } finally {
       setIsLoading(false)
     }
@@ -144,10 +144,10 @@ export default function Orders() {
       
       // For now, we'll just log the invoice data
       // In a real app, you'd generate a PDF
-      console.log("Invoice data:", data.invoice)
+      // console.log("Invoice data:", data.invoice)
       alert("Invoice data logged to console. PDF generation would be implemented here.")
     } catch (error) {
-      console.error("Error downloading invoice:", error)
+      // console.error("Error downloading invoice:", error)
     }
   }
 

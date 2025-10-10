@@ -78,7 +78,7 @@ export default function SubscriptionsPage() {
       const data = await response.json()
       setSubscriptions(data.subscriptions || [])
     } catch (error) {
-      console.error("Error fetching subscriptions:", error)
+      // console.error("Error fetching subscriptions:", error)
       toast.error("Failed to load subscriptions")
     } finally {
       setIsLoading(false)
@@ -101,7 +101,7 @@ export default function SubscriptionsPage() {
       toast.success("Subscription paused for 7 days")
       fetchSubscriptions()
     } catch (error) {
-      console.error("Error pausing subscription:", error)
+      // console.error("Error pausing subscription:", error)
       toast.error("Failed to pause subscription")
     }
   }
@@ -121,7 +121,7 @@ export default function SubscriptionsPage() {
       toast.success("Subscription resumed successfully")
       fetchSubscriptions()
     } catch (error) {
-      console.error("Error resuming subscription:", error)
+      // console.error("Error resuming subscription:", error)
       toast.error("Failed to resume subscription")
     }
   }
@@ -143,7 +143,7 @@ export default function SubscriptionsPage() {
       toast.success("Subscription cancelled successfully")
       fetchSubscriptions()
     } catch (error) {
-      console.error("Error cancelling subscription:", error)
+      // console.error("Error cancelling subscription:", error)
       toast.error("Failed to cancel subscription")
     }
   }
@@ -163,7 +163,7 @@ export default function SubscriptionsPage() {
       toast.success("Subscription reactivated successfully")
       fetchSubscriptions()
     } catch (error) {
-      console.error("Error reactivating subscription:", error)
+      // console.error("Error reactivating subscription:", error)
       toast.error("Failed to reactivate subscription")
     }
   }

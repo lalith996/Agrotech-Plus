@@ -67,7 +67,7 @@ export default function FarmerInsights() {
       const data = await response.json()
       setInsights(data.insights)
     } catch (error) {
-      console.error("Error fetching insights:", error)
+      // console.error("Error fetching insights:", error)
     } finally {
       setIsLoading(false)
     }

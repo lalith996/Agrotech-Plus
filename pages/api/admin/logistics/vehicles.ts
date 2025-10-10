@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(405).json({ error: 'Method not allowed' })
     }
   } catch (error) {
-    console.error('Vehicles API error:', error)
+    // console.error('Vehicles API error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 }
@@ -194,7 +194,7 @@ async function handleGetVehicles(req: NextApiRequest, res: NextApiResponse) {
       stats
     });
   } catch (error) {
-    console.error('Get vehicles error:', error);
+    // console.error('Get vehicles error:', error);
     res.status(500).json({ error: 'Failed to fetch vehicles' });
   }
 }
@@ -233,14 +233,14 @@ async function handleCreateVehicle(req: NextApiRequest, res: NextApiResponse) {
       createdAt: new Date()
     };
 
-    console.log('Mock creating vehicle:', newVehicle);
+    // console.log('Mock creating vehicle:', newVehicle);
 
     res.status(201).json({
       success: true,
       vehicle: newVehicle
     });
   } catch (error) {
-    console.error('Create vehicle error:', error);
+    // console.error('Create vehicle error:', error);
     res.status(500).json({ error: 'Failed to create vehicle' });
   }
 }
@@ -269,14 +269,14 @@ async function handleUpdateVehicle(req: NextApiRequest, res: NextApiResponse) {
       updatedAt: new Date()
     };
 
-    console.log('Mock updating vehicle:', updatedVehicle);
+    // console.log('Mock updating vehicle:', updatedVehicle);
 
     res.json({
       success: true,
       vehicle: updatedVehicle
     });
   } catch (error) {
-    console.error('Update vehicle error:', error);
+    // console.error('Update vehicle error:', error);
     res.status(500).json({ error: 'Failed to update vehicle' });
   }
 }

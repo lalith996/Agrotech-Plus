@@ -87,7 +87,7 @@ export default function OrderDetails() {
       const data = await response.json()
       setOrder(data.order)
     } catch (error) {
-      console.error("Error fetching order:", error)
+      // console.error("Error fetching order:", error)
     } finally {
       setIsLoading(false)
     }
@@ -161,10 +161,10 @@ export default function OrderDetails() {
       if (!response.ok) throw new Error("Failed to generate invoice")
       
       const data = await response.json()
-      console.log("Invoice data:", data.invoice)
+      // console.log("Invoice data:", data.invoice)
       alert("Invoice data logged to console. PDF generation would be implemented here.")
     } catch (error) {
-      console.error("Error downloading invoice:", error)
+      // console.error("Error downloading invoice:", error)
     }
   }
 
@@ -182,7 +182,7 @@ export default function OrderDetails() {
       
       fetchOrder() // Refresh order data
     } catch (error) {
-      console.error("Error cancelling order:", error)
+      // console.error("Error cancelling order:", error)
     }
   }
 

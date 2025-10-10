@@ -35,9 +35,9 @@ const CheckoutForm = () => {
     });
 
     if (error) {
-      console.log('[error]', error);
+      // console.log('[error]', error);
     } else {
-      console.log('[PaymentIntent]', paymentIntent);
+      // console.log('[PaymentIntent]', paymentIntent);
     }
   };
 

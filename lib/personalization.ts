@@ -123,7 +123,7 @@ class PersonalizationService {
         notificationSettings: updated.notificationSettings as any
       };
     } catch (error) {
-      console.error('Update preferences error:', error);
+      // console.error('Update preferences error:', error);
       throw error;
     }
   }
@@ -313,7 +313,7 @@ class PersonalizationService {
 
       await this.updateUserPreferences(userId, updatedPreferences);
     } catch (error) {
-      console.error('Track interaction error:', error);
+      // console.error('Track interaction error:', error);
     }
   }
 
@@ -391,7 +391,7 @@ class PersonalizationService {
         }
       };
     } catch (error) {
-      console.error('Generate default preferences error:', error);
+      // console.error('Generate default preferences error:', error);
       return {
         favoriteCategories: [],
         preferredFarms: [],
@@ -440,7 +440,7 @@ class PersonalizationService {
         }))
       );
     } catch (error) {
-      console.error('Get purchase history error:', error);
+      // console.error('Get purchase history error:', error);
       return [];
     }
   }

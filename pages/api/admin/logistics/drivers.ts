@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(405).json({ error: 'Method not allowed' })
     }
   } catch (error) {
-    console.error('Drivers API error:', error)
+    // console.error('Drivers API error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 }
@@ -134,7 +134,7 @@ async function handleGetDrivers(req: NextApiRequest, res: NextApiResponse) {
       stats
     });
   } catch (error) {
-    console.error('Get drivers error:', error);
+    // console.error('Get drivers error:', error);
     res.status(500).json({ error: 'Failed to fetch drivers' });
   }
 }
@@ -168,14 +168,14 @@ async function handleCreateDriver(req: NextApiRequest, res: NextApiResponse) {
       rating: 5.0
     };
 
-    console.log('Mock creating driver:', newDriver);
+    // console.log('Mock creating driver:', newDriver);
 
     res.status(201).json({
       success: true,
       driver: newDriver
     });
   } catch (error) {
-    console.error('Create driver error:', error);
+    // console.error('Create driver error:', error);
     res.status(500).json({ error: 'Failed to create driver' });
   }
 }
@@ -201,14 +201,14 @@ async function handleUpdateDriver(req: NextApiRequest, res: NextApiResponse) {
       updatedAt: new Date()
     };
 
-    console.log('Mock updating driver:', updatedDriver);
+    // console.log('Mock updating driver:', updatedDriver);
 
     res.json({
       success: true,
       driver: updatedDriver
     });
   } catch (error) {
-    console.error('Update driver error:', error);
+    // console.error('Update driver error:', error);
     res.status(500).json({ error: 'Failed to update driver' });
   }
 }

@@ -606,7 +606,7 @@ class NearestNeighborOptimizer {
         const travelTime = await mapsService.getTravelTime(from, to);
         return travelTime;
       } catch (error) {
-        console.warn('Failed to get real-time travel time, using estimate:', error);
+        // console.warn('Failed to get real-time travel time, using estimate:', error);
       }
     }
     
@@ -958,7 +958,7 @@ export class RouteOptimizer {
         const result = await this.optimizeRoutes(locations, vehicles, algorithmOptions);
         results.push(result);
       } catch (error) {
-        console.warn(`Algorithm ${algorithm} failed:`, error);
+        // console.warn(`Algorithm ${algorithm} failed:`, error);
       }
     }
     

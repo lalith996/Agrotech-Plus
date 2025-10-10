@@ -72,7 +72,7 @@ export default function FarmerDashboard() {
       const data = await response.json()
       setStats(data.stats)
     } catch (error) {
-      console.error("Error fetching dashboard stats:", error)
+      // console.error("Error fetching dashboard stats:", error)
     } finally {
       setIsLoading(false)
     }

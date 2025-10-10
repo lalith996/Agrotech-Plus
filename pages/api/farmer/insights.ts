@@ -147,7 +147,7 @@ export default async function handler(
 
       res.status(200).json({ insights })
     } catch (error) {
-      console.error("Farmer insights error:", error)
+      // console.error("Farmer insights error:", error)
       res.status(500).json({ message: "Internal server error" })
     }
   } else {

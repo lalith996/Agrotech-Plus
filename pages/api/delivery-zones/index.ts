@@ -26,7 +26,7 @@ export default async function handler(
 
       res.status(200).json({ zones })
     } catch (error) {
-      console.error("Delivery zones fetch error:", error)
+      // console.error("Delivery zones fetch error:", error)
       res.status(500).json({ message: "Internal server error" })
     }
   } else if (req.method === "POST") {
@@ -58,7 +58,7 @@ export default async function handler(
 
       res.status(201).json({ zone, message: "Delivery zone created successfully" })
     } catch (error) {
-      console.error("Delivery zone creation error:", error)
+      // console.error("Delivery zone creation error:", error)
       
       if (error instanceof Error && error.message.includes("Unique constraint")) {
         return res.status(400).json({ message: "Zone name already exists" })

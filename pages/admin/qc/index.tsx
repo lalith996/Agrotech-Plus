@@ -87,7 +87,7 @@ export default function QualityControlInterface() {
       const data = await response.json()
       setInspections(data.inspections)
     } catch (error) {
-      console.error("Error fetching inspections:", error)
+      // console.error("Error fetching inspections:", error)
       toast.error("Failed to load inspections")
     } finally {
       setIsLoading(false)
@@ -181,7 +181,7 @@ export default function QualityControlInterface() {
       
       toast.success("QC inspection completed successfully")
     } catch (error) {
-      console.error("Error submitting QC result:", error)
+      // console.error("Error submitting QC result:", error)
       toast.error("Failed to submit QC result")
     } finally {
       setIsSubmitting(false)

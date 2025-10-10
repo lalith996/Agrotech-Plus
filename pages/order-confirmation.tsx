@@ -81,7 +81,7 @@ export default function OrderConfirmationPage() {
         router.push("/orders")
       }
     } catch (error) {
-      console.error("Error fetching order:", error)
+      // console.error("Error fetching order:", error)
       toast.error("Failed to load order details")
     } finally {
       setLoading(false)

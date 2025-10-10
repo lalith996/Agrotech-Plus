@@ -37,17 +37,17 @@ export default async function handler(
       return res.status(400).json({ message: "Image URL is required" });
     }
 
-    console.log(`Received request to OCR image: ${imageUrl}`)
+    // console.log(`Received request to OCR image: ${imageUrl}`)
 
     const ocrWorker = await initializeWorker();
     const { data: { text } } = await ocrWorker.recognize(imageUrl);
     
-    console.log(`OCR Result: ${text.substring(0, 100)}...`);
+    // console.log(`OCR Result: ${text.substring(0, 100)}...`);
 
     res.status(200).json({ text });
 
   } catch (error) {
-    console.error("Error performing OCR:", error);
+    // console.error("Error performing OCR:", error);
     res.status(500).json({ message: "Internal server error or OCR failure" });
   }
   // We don't terminate the worker here to keep it warm for subsequent requests.

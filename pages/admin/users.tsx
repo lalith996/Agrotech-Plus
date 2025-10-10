@@ -33,7 +33,7 @@ const AdminUsersPage = () => {
         setUsers(data.users);
       } catch (err) {
         setError('Failed to load users.');
-        console.error(err);
+        // console.error(err);
       } finally {
         setIsLoading(false);
       }

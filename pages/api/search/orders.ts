@@ -165,7 +165,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
 
   } catch (error) {
-    console.error('Error searching orders:', error)
+    // console.error('Error searching orders:', error)
     return res.status(500).json({
       success: false,
       message: 'Internal server error'

@@ -59,7 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).send(csvData)
 
   } catch (error) {
-    console.error('Error exporting analytics:', error)
+    // console.error('Error exporting analytics:', error)
     return res.status(500).json({
       success: false,
       message: 'Internal server error'

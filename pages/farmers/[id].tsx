@@ -127,7 +127,7 @@ export default function FarmerProfile() {
         setProducts(productsData.products || [])
       }
     } catch (error) {
-      console.error("Error fetching farmer data:", error)
+      // console.error("Error fetching farmer data:", error)
     } finally {
       setIsLoading(false)
     }

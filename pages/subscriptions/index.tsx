@@ -63,7 +63,7 @@ export default function Subscriptions() {
       const data = await response.json()
       setSubscriptions(data.subscriptions)
     } catch (error) {
-      console.error("Error fetching subscriptions:", error)
+      // console.error("Error fetching subscriptions:", error)
     } finally {
       setIsLoading(false)
     }

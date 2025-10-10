@@ -181,7 +181,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       await saveSettings(settings)
 
       // Log the settings change
-      console.log(`Settings updated by user ${session.user.id} at ${new Date().toISOString()}`)
+      // console.log(`Settings updated by user ${session.user.id} at ${new Date().toISOString()}`)
 
       return res.status(200).json({
         success: true,
@@ -302,7 +302,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ message: 'Method not allowed' })
 
   } catch (error) {
-    console.error('Error handling settings request:', error)
+    // console.error('Error handling settings request:', error)
     return res.status(500).json({
       success: false,
       message: 'Internal server error'

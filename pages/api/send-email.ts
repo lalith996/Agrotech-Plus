@@ -16,9 +16,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       await sgMail.send(msg);
       res.status(200).json({ success: true });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       if (error.response) {
-        console.error(error.response.body)
+        // console.error(error.response.body)
       }
       res.status(500).json({ error: 'Error sending email' });
     }

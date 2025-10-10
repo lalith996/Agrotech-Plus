@@ -81,7 +81,7 @@ export default function OrdersPage() {
       const data = await response.json()
       setOrders(data.orders || [])
     } catch (error) {
-      console.error("Error fetching orders:", error)
+      // console.error("Error fetching orders:", error)
       toast.error("Failed to load orders")
     } finally {
       setIsLoading(false)

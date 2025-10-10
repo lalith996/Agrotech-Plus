@@ -312,7 +312,7 @@ export function withCache<T>(
           options
         );
       } catch (error) {
-        console.error('Cache middleware error:', error);
+        // console.error('Cache middleware error:', error);
         return method.apply(this, args);
       }
     };

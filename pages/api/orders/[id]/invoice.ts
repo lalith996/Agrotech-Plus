@@ -93,7 +93,7 @@ export default async function handler(
 
       res.status(200).json({ invoice })
     } catch (error) {
-      console.error("Invoice generation error:", error)
+      // console.error("Invoice generation error:", error)
       res.status(500).json({ message: "Internal server error" })
     }
   } else {

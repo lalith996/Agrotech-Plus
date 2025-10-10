@@ -64,7 +64,7 @@ export default async function handler(
 
       res.status(200).json({ subscription })
     } catch (error) {
-      console.error("Subscription fetch error:", error)
+      // console.error("Subscription fetch error:", error)
       res.status(500).json({ message: "Internal server error" })
     }
   } else if (req.method === "PUT") {
@@ -178,7 +178,7 @@ export default async function handler(
         message: "Subscription updated successfully",
       })
     } catch (error) {
-      console.error("Subscription update error:", error)
+      // console.error("Subscription update error:", error)
 
       if (error instanceof Error) {
         return res.status(400).json({ message: error.message })
@@ -210,7 +210,7 @@ export default async function handler(
 
       res.status(200).json({ message: "Subscription cancelled successfully" })
     } catch (error) {
-      console.error("Subscription deletion error:", error)
+      // console.error("Subscription deletion error:", error)
       res.status(500).json({ message: "Internal server error" })
     }
   } else {

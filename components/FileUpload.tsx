@@ -81,7 +81,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess, onUploadError,
       onUploadSuccess(newFile);
 
     } catch (err: any) {
-      console.error('Upload process failed:', err);
+      // console.error('Upload process failed:', err);
       setError('Upload failed. Please try again.');
       if (onUploadError) {
         onUploadError(err);

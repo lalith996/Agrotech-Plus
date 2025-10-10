@@ -50,7 +50,7 @@ export default async function handler(
 
       res.status(200).json({ notifications: mockNotifications })
     } catch (error) {
-      console.error("Notifications fetch error:", error)
+      // console.error("Notifications fetch error:", error)
       res.status(500).json({ message: "Internal server error" })
     }
   } else if (req.method === "PUT") {
@@ -58,11 +58,11 @@ export default async function handler(
       const { notificationId, read } = req.body
 
       // In a real system, update the notification in the database
-      console.log(`Marking notification ${notificationId} as ${read ? 'read' : 'unread'}`)
+      // console.log(`Marking notification ${notificationId} as ${read ? 'read' : 'unread'}`)
 
       res.status(200).json({ message: "Notification updated successfully" })
     } catch (error) {
-      console.error("Notification update error:", error)
+      // console.error("Notification update error:", error)
       res.status(500).json({ message: "Internal server error" })
     }
   } else {

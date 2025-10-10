@@ -37,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
       res.status(201).json(qcEntry);
     } catch (error) {
-      console.error('Error creating QC entry:', error);
+      // console.error('Error creating QC entry:', error);
       res.status(500).json({ message: 'Internal server error' });
     }
   } else {

@@ -139,7 +139,7 @@ export default function ProductDetail() {
         fetchRelatedProducts(result.product.category, result.product.id)
       }
     } catch (error) {
-      console.error("Error fetching product:", error)
+      // console.error("Error fetching product:", error)
     } finally {
       setIsLoading(false)
     }
@@ -154,7 +154,7 @@ export default function ProductDetail() {
         setRelatedProducts(filtered)
       }
     } catch (error) {
-      console.error("Error fetching related products:", error)
+      // console.error("Error fetching related products:", error)
     }
   }
 

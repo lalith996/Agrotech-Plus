@@ -36,7 +36,7 @@ export default async function handler(
       });
       res.status(200).json(certifications);
     } catch (error) {
-      console.error("Error fetching certifications:", error);
+      // console.error("Error fetching certifications:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   } else if (req.method === "POST") {
@@ -69,7 +69,7 @@ export default async function handler(
 
       res.status(201).json(newCertification);
     } catch (error) {
-      console.error("Error creating certification:", error);
+      // console.error("Error creating certification:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   } else {

@@ -11,10 +11,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         to,
         from: process.env.TWILIO_PHONE_NUMBER, // Your Twilio phone number
       });
-      console.log(message.sid);
+      // console.log(message.sid);
       res.status(200).json({ success: true, sid: message.sid });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       res.status(500).json({ error: 'Error sending SMS' });
     }
   } else {

@@ -15,7 +15,7 @@ const UploadTestPage = () => {
   const [ocrError, setOcrError] = useState<string | null>(null);
 
   const handleUploadSuccess = (urls: UploadedImageUrls) => {
-    console.log('Upload and processing successful!', urls);
+    // console.log('Upload and processing successful!', urls);
     setUploadedUrls(urls);
     // Reset OCR state if a new image is uploaded
     setOcrText(null);
@@ -23,7 +23,7 @@ const UploadTestPage = () => {
   };
 
   const handleUploadError = (error: any) => {
-    console.error('Upload failed:', error);
+    // console.error('Upload failed:', error);
     alert('Upload failed. See the console for more details.');
   };
 
@@ -38,7 +38,7 @@ const UploadTestPage = () => {
       });
       setOcrText(data.text || "No text found.");
     } catch (err) {
-      console.error('OCR failed:', err);
+      // console.error('OCR failed:', err);
       setOcrError('Failed to extract text from the image.');
     } finally {
       setOcrLoading(false);

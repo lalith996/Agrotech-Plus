@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(405).json({ error: 'Method not allowed' })
     }
   } catch (error) {
-    console.error('Routes API error:', error)
+    // console.error('Routes API error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 }
@@ -168,7 +168,7 @@ async function handleGetRoutes(req: NextApiRequest, res: NextApiResponse) {
       summary
     });
   } catch (error) {
-    console.error('Get routes error:', error);
+    // console.error('Get routes error:', error);
     res.status(500).json({ error: 'Failed to fetch routes' });
   }
 }
@@ -210,14 +210,14 @@ async function handleCreateRoute(req: NextApiRequest, res: NextApiResponse) {
       }))
     };
 
-    console.log('Mock creating route:', newRoute);
+    // console.log('Mock creating route:', newRoute);
 
     res.status(201).json({
       success: true,
       route: newRoute
     });
   } catch (error) {
-    console.error('Create route error:', error);
+    // console.error('Create route error:', error);
     res.status(500).json({ error: 'Failed to create route' });
   }
 }
@@ -244,14 +244,14 @@ async function handleUpdateRoute(req: NextApiRequest, res: NextApiResponse) {
       stops: stops || []
     };
 
-    console.log('Mock updating route:', updatedRoute);
+    // console.log('Mock updating route:', updatedRoute);
 
     res.json({
       success: true,
       route: updatedRoute
     });
   } catch (error) {
-    console.error('Update route error:', error);
+    // console.error('Update route error:', error);
     res.status(500).json({ error: 'Failed to update route' });
   }
 }
@@ -265,14 +265,14 @@ async function handleDeleteRoute(req: NextApiRequest, res: NextApiResponse) {
     }
 
     // Mock route deletion (in real implementation use prisma.deliveryRoute.delete)
-    console.log('Mock deleting route:', routeId);
+    // console.log('Mock deleting route:', routeId);
 
     res.json({
       success: true,
       message: 'Route deleted successfully'
     });
   } catch (error) {
-    console.error('Delete route error:', error);
+    // console.error('Delete route error:', error);
     res.status(500).json({ error: 'Failed to delete route' });
   }
 }

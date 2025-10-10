@@ -49,7 +49,7 @@ export default async function handler(
     res.status(201).json(newFile);
 
   } catch (error) {
-    console.error("Error creating file record:", error);
+    // console.error("Error creating file record:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

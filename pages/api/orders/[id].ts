@@ -63,7 +63,7 @@ export default async function handler(
 
       res.status(200).json({ order })
     } catch (error) {
-      console.error("Order fetch error:", error)
+      // console.error("Order fetch error:", error)
       res.status(500).json({ message: "Internal server error" })
     }
   } else if (req.method === "PUT") {
@@ -132,7 +132,7 @@ export default async function handler(
         message: "Order updated successfully"
       })
     } catch (error) {
-      console.error("Order update error:", error)
+      // console.error("Order update error:", error)
       res.status(500).json({ message: "Internal server error" })
     }
   } else {

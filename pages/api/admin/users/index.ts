@@ -51,7 +51,7 @@ export default async function handler(
 
     res.status(200).json({ users });
   } catch (error) {
-    console.error("Admin users fetch error:", error);
+    // console.error("Admin users fetch error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

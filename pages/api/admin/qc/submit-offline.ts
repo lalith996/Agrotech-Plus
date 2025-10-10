@@ -97,7 +97,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     photoUrls.push(uploadResult.file.url);
                 }
             } catch (error) {
-                console.error('Photo upload error:', error);
+                // console.error('Photo upload error:', error);
                 // Continue with other photos even if one fails
             }
         }
@@ -122,7 +122,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     audioUrls.push(uploadResult.file.url);
                 }
             } catch (error) {
-                console.error('Audio upload error:', error);
+                // console.error('Audio upload error:', error);
                 // Continue with other audio files even if one fails
             }
         }
@@ -177,7 +177,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 });
             }
         } catch (error) {
-            console.warn('Could not create regular QC result, but offline entry saved:', error);
+            // console.warn('Could not create regular QC result, but offline entry saved:', error);
         }
 
         res.status(200).json({
@@ -189,7 +189,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
 
     } catch (error) {
-        console.error('Offline QC submission error:', error);
+        // console.error('Offline QC submission error:', error);
         res.status(500).json({
             error: error instanceof Error ? error.message : 'Failed to process offline submission'
         });

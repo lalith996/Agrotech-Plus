@@ -35,7 +35,7 @@ const AdminFarmersPage = () => {
         setFarmers(data.farmers);
       } catch (err) {
         setError('Failed to load farmers.');
-        console.error(err);
+        // console.error(err);
       } finally {
         setIsLoading(false);
       }

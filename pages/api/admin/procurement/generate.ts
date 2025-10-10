@@ -101,7 +101,7 @@ export default async function handler(
         message: "Procurement list generated successfully"
       })
     } catch (error) {
-      console.error("Procurement generation error:", error)
+      // console.error("Procurement generation error:", error)
       res.status(500).json({ message: "Internal server error" })
     }
   } else {

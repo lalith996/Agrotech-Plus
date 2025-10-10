@@ -108,7 +108,7 @@ class DocumentManagementService {
         document
       };
     } catch (error) {
-      console.error('Create document error:', error);
+      // console.error('Create document error:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Document creation failed'
@@ -169,7 +169,7 @@ class DocumentManagementService {
         version
       };
     } catch (error) {
-      console.error('Add version error:', error);
+      // console.error('Add version error:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Version creation failed'
@@ -208,7 +208,7 @@ class DocumentManagementService {
         status: 'active'
       };
     } catch (error) {
-      console.error('Get document error:', error);
+      // console.error('Get document error:', error);
       return null;
     }
   }
@@ -231,7 +231,7 @@ class DocumentManagementService {
         createdAt: new Date()
       }];
     } catch (error) {
-      console.error('Get version history error:', error);
+      // console.error('Get version history error:', error);
       return [];
     }
   }
@@ -246,11 +246,11 @@ class DocumentManagementService {
   ): Promise<{ success: boolean; error?: string }> {
     try {
       // Mock approval process
-      console.log(`Approving version ${versionId} by ${approverId}, makeLatest: ${makeLatest}`);
+      // console.log(`Approving version ${versionId} by ${approverId}, makeLatest: ${makeLatest}`);
       
       return { success: true };
     } catch (error) {
-      console.error('Approve version error:', error);
+      // console.error('Approve version error:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Approval failed'
@@ -268,11 +268,11 @@ class DocumentManagementService {
   ): Promise<{ success: boolean; error?: string }> {
     try {
       // Mock rejection process
-      console.log(`Rejecting version ${versionId} by ${approverId}, reason: ${reason}`);
+      // console.log(`Rejecting version ${versionId} by ${approverId}, reason: ${reason}`);
       
       return { success: true };
     } catch (error) {
-      console.error('Reject version error:', error);
+      // console.error('Reject version error:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Rejection failed'
@@ -330,7 +330,7 @@ class DocumentManagementService {
         }
       };
     } catch (error) {
-      console.error('Search documents error:', error);
+      // console.error('Search documents error:', error);
       return {
         documents: [],
         pagination: { page, limit, total: 0, pages: 0 }
@@ -347,11 +347,11 @@ class DocumentManagementService {
   ): Promise<{ success: boolean; error?: string }> {
     try {
       // Mock archive process
-      console.log(`Archiving document ${documentId} by ${userId}`);
+      // console.log(`Archiving document ${documentId} by ${userId}`);
       
       return { success: true };
     } catch (error) {
-      console.error('Archive document error:', error);
+      // console.error('Archive document error:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Archive failed'
@@ -368,11 +368,11 @@ class DocumentManagementService {
   ): Promise<{ success: boolean; error?: string }> {
     try {
       // Mock delete process
-      console.log(`Deleting document ${documentId} by ${userId}`);
+      // console.log(`Deleting document ${documentId} by ${userId}`);
       
       return { success: true };
     } catch (error) {
-      console.error('Delete document error:', error);
+      // console.error('Delete document error:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Delete failed'
@@ -400,7 +400,7 @@ class DocumentManagementService {
         createdAt: new Date()
       }];
     } catch (error) {
-      console.error('Get pending approvals error:', error);
+      // console.error('Get pending approvals error:', error);
       return [];
     }
   }
@@ -458,7 +458,7 @@ class DocumentManagementService {
         comparison
       };
     } catch (error) {
-      console.error('Compare versions error:', error);
+      // console.error('Compare versions error:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Comparison failed'

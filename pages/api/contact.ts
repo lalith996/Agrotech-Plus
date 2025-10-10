@@ -48,7 +48,7 @@ export default async function handler(
     });
 
   } catch (error) {
-    console.error("Contact form error:", error);
+    // console.error("Contact form error:", error);
     return res.status(500).json({
       error: "Sorry, we were unable to send your message. Please try again later.",
     });

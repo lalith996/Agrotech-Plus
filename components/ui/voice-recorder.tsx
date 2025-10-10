@@ -100,7 +100,7 @@ export function VoiceRecorder({
       
       toast.success('Recording started')
     } catch (error) {
-      console.error('Recording start error:', error)
+      // console.error('Recording start error:', error)
       toast.error('Failed to start recording. Please check microphone permissions.')
     }
   }
@@ -134,7 +134,7 @@ export function VoiceRecorder({
       
       toast.success('Recording saved')
     } catch (error) {
-      console.error('Recording stop error:', error)
+      // console.error('Recording stop error:', error)
       toast.error('Failed to save recording')
     }
   }
@@ -166,7 +166,7 @@ export function VoiceRecorder({
       
       updateAudioLevel()
     } catch (error) {
-      console.error('Audio monitoring error:', error)
+      // console.error('Audio monitoring error:', error)
     }
   }
 

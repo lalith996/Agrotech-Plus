@@ -88,7 +88,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
 
   } catch (error) {
-    console.error('Error searching products:', error)
+    // console.error('Error searching products:', error)
     return res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -218,6 +218,6 @@ async function trackSearchQuery(query: string, userId: string, results: number) 
       }
     });
   } catch (error) {
-    console.error('Search tracking error:', error);
+    // console.error('Search tracking error:', error);
   }
 }

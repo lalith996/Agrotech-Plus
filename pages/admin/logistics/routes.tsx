@@ -32,10 +32,10 @@ const AdminRoutes = () => {
         // The API would need to return orders with full address details
         setOrders(data.orders);
       } else {
-        console.error('Failed to fetch orders');
+        // console.error('Failed to fetch orders');
       }
     } catch (error) {
-      console.error('An error occurred while fetching orders', error);
+      // console.error('An error occurred while fetching orders', error);
     }
   };
 

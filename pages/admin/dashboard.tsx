@@ -28,7 +28,7 @@ const AdminDashboardPage = () => {
         setStats(data.stats);
       } catch (err) {
         setError('Failed to load dashboard data. You may not have permission to view this page.');
-        console.error(err);
+        // console.error(err);
       } finally {
         setIsLoading(false);
       }

@@ -49,7 +49,7 @@ export default function FarmerDeliveries() {
       const data = await response.json()
       setDeliveries(data.deliveries)
     } catch (error) {
-      console.error("Error fetching deliveries:", error)
+      // console.error("Error fetching deliveries:", error)
     } finally {
       setIsLoading(false)
     }

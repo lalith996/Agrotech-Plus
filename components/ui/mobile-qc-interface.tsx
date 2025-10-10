@@ -133,7 +133,7 @@ export function MobileQCInterface({
           }))
         },
         (error) => {
-          console.warn('Geolocation error:', error)
+          // console.warn('Geolocation error:', error)
         }
       )
     }
@@ -146,7 +146,7 @@ export function MobileQCInterface({
       try {
         setQueuedSubmissions(JSON.parse(stored))
       } catch (error) {
-        console.error('Error loading queued submissions:', error)
+        // console.error('Error loading queued submissions:', error)
       }
     }
   }, [])
@@ -170,7 +170,7 @@ export function MobileQCInterface({
         setQueuedSubmissions(prev => prev.filter(s => s.id !== submission.id))
         toast.success(`Synced inspection for ${submission.id}`)
       } catch (error) {
-        console.error('Sync error:', error)
+        // console.error('Sync error:', error)
         break // Stop syncing on first error
       }
     }
@@ -216,7 +216,7 @@ export function MobileQCInterface({
       setIsRecording(true)
     } catch (error) {
       toast.error('Could not access microphone')
-      console.error('Audio recording error:', error)
+      // console.error('Audio recording error:', error)
     }
   }
 

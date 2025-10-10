@@ -120,7 +120,7 @@ export default function AnalyticsDashboard() {
       const data = await response.json()
       setAnalyticsData(data.analytics)
     } catch (error) {
-      console.error("Error fetching analytics:", error)
+      // console.error("Error fetching analytics:", error)
       toast.error("Failed to load analytics data")
     } finally {
       setIsLoading(false)
@@ -151,7 +151,7 @@ export default function AnalyticsDashboard() {
       
       toast.success(`${type} data exported successfully`)
     } catch (error) {
-      console.error("Error exporting data:", error)
+      // console.error("Error exporting data:", error)
       toast.error("Failed to export data")
     }
   }

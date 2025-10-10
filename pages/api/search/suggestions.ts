@@ -49,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
   } catch (error) {
-    console.error('Suggestions error:', error);
+    // console.error('Suggestions error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to get suggestions'
@@ -67,7 +67,7 @@ async function getElasticsearchSuggestions(query: string, limit: number, type: s
       type: 'product'
     }));
   } catch (error) {
-    console.error('Elasticsearch suggestions error:', error);
+    // console.error('Elasticsearch suggestions error:', error);
     return await getDatabaseSuggestions(query, limit, type);
   }
 }
@@ -164,7 +164,7 @@ async function getDatabaseSuggestions(query: string, limit: number, type: string
       .slice(0, limit);
 
   } catch (error) {
-    console.error('Database suggestions error:', error);
+    // console.error('Database suggestions error:', error);
     return [];
   }
 }

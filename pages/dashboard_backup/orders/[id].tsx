@@ -103,7 +103,7 @@ export default function OrderDetailPage() {
       const data = await response.json()
       setOrder(data.order)
     } catch (error) {
-      console.error("Error fetching order:", error)
+      // console.error("Error fetching order:", error)
       toast.error("Failed to load order details")
     } finally {
       setIsLoading(false)
@@ -126,7 +126,7 @@ export default function OrderDetailPage() {
       toast.success("Order cancelled successfully")
       fetchOrder()
     } catch (error) {
-      console.error("Error cancelling order:", error)
+      // console.error("Error cancelling order:", error)
       toast.error("Failed to cancel order")
     } finally {
       setIsCancelling(false)
@@ -141,7 +141,7 @@ export default function OrderDetailPage() {
       const data = await response.json()
       toast.success("Invoice downloaded successfully")
     } catch (error) {
-      console.error("Error downloading invoice:", error)
+      // console.error("Error downloading invoice:", error)
       toast.error("Failed to download invoice")
     }
   }

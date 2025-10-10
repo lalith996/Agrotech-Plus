@@ -63,7 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
   } catch (error) {
-    console.error('OCR processing error:', error);
+    // console.error('OCR processing error:', error);
     res.status(500).json({
       error: error instanceof Error ? error.message : 'OCR processing failed'
     });
@@ -82,7 +82,7 @@ async function downloadFileFromS3(key: string): Promise<Buffer> {
     const arrayBuffer = await response.arrayBuffer();
     return Buffer.from(arrayBuffer);
   } catch (error) {
-    console.error('File download error:', error);
+    // console.error('File download error:', error);
     throw new Error('Failed to download file for OCR processing');
   }
 }

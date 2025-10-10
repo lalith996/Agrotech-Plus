@@ -88,11 +88,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         // Log for development purposes
-        console.log('QC Result created:', qcResult)
+        // console.log('QC Result created:', qcResult)
 
         // Send notification to farmer if there are quality issues
         if (rejectionReasons.length > 0 || acceptanceRate < 90) {
-            console.log(`QC Alert: Low acceptance rate: ${acceptanceRate.toFixed(1)}%`)
+            // console.log(`QC Alert: Low acceptance rate: ${acceptanceRate.toFixed(1)}%`)
         }
 
         return res.status(200).json({
@@ -110,7 +110,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         })
 
     } catch (error) {
-        console.error('Error submitting QC result:', error)
+        // console.error('Error submitting QC result:', error)
         return res.status(500).json({
             success: false,
             message: 'Internal server error'

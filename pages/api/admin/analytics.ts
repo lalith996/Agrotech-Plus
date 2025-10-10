@@ -143,7 +143,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
 
   } catch (error) {
-    console.error('Error fetching analytics:', error)
+    // console.error('Error fetching analytics:', error)
     return res.status(500).json({
       success: false,
       message: 'Internal server error'

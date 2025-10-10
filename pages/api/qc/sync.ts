@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Basic validation for each entry
         if (!farmerDeliveryId || !productId || acceptedQuantity === undefined || rejectedQuantity === undefined) {
           // You might want to handle this more gracefully, e.g., by logging the error and skipping the entry
-          console.error('Skipping invalid entry:', entry);
+          // console.error('Skipping invalid entry:', entry);
           return null; // or continue to the next iteration
         }
 
@@ -50,7 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       
       res.status(200).json({ message: 'Sync successful' });
     } catch (error) {
-      console.error('Error syncing QC entries:', error);
+      // console.error('Error syncing QC entries:', error);
       res.status(500).json({ message: 'Internal server error' });
     }
   } else {

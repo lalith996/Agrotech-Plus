@@ -43,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ error: 'Invalid backup type' })
     }
   } catch (error) {
-    console.error('Backup error:', error)
+    // console.error('Backup error:', error)
     res.status(500).json({ error: 'Backup failed' })
   }
 }
@@ -75,7 +75,7 @@ async function handleDatabaseBackup(req: NextApiRequest, res: NextApiResponse) {
     
     return res.json(backupData);
   } catch (error) {
-    console.error('Database backup error:', error);
+    // console.error('Database backup error:', error);
     return res.status(500).json({ error: 'Database backup failed' });
   }
 }
@@ -92,7 +92,7 @@ async function handleFilesBackup(req: NextApiRequest, res: NextApiResponse) {
     const mockZipContent = Buffer.from('Mock zip file content');
     return res.send(mockZipContent);
   } catch (error) {
-    console.error('Files backup error:', error);
+    // console.error('Files backup error:', error);
     return res.status(500).json({ error: 'Files backup failed' });
   }
 }
@@ -109,7 +109,7 @@ async function handleFullBackup(req: NextApiRequest, res: NextApiResponse) {
     const mockZipContent = Buffer.from('Mock full backup content');
     return res.send(mockZipContent);
   } catch (error) {
-    console.error('Full backup error:', error);
+    // console.error('Full backup error:', error);
     return res.status(500).json({ error: 'Full backup failed' });
   }
 }

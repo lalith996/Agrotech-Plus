@@ -188,7 +188,7 @@ export function FileUpload({
       onUploadComplete?.(uploadedFiles)
 
     } catch (error) {
-      console.error('Upload error:', error)
+      // console.error('Upload error:', error)
       
       // Mark files as error
       setFiles(prev => prev.map(file => {
@@ -225,7 +225,7 @@ export function FileUpload({
       onFileRemove?.(fileId)
       toast.success('File deleted successfully')
     } catch (error) {
-      console.error('Delete error:', error)
+      // console.error('Delete error:', error)
       toast.error('Failed to delete file')
     }
   }

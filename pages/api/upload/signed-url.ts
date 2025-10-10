@@ -58,7 +58,7 @@ export default async function handler(
     res.status(200).json({ signedUrl, url: finalUrl, key });
 
   } catch (error) {
-    console.error("Error generating signed URL:", error);
+    // console.error("Error generating signed URL:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

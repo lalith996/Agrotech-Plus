@@ -95,7 +95,7 @@ export default function CreateSubscription() {
       setProducts(productsData.products)
       setDeliveryZones(zonesData.zones)
     } catch (error) {
-      console.error("Error fetching data:", error)
+      // console.error("Error fetching data:", error)
       setError("Failed to load data")
     } finally {
       setIsLoading(false)

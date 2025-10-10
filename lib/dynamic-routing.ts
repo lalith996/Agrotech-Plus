@@ -157,7 +157,7 @@ class TrafficMonitoringService {
 
         this.trafficCache.set(segment.id, condition);
       } catch (error) {
-        console.warn(`Failed to update traffic for segment ${segment.id}:`, error);
+        // console.warn(`Failed to update traffic for segment ${segment.id}:`, error);
       }
     }
   }
@@ -268,7 +268,7 @@ class WeatherMonitoringService {
         const locationKey = `${location.lat},${location.lng}`;
         this.weatherCache.set(locationKey, condition);
       } catch (error) {
-        console.warn(`Failed to update weather for location ${location.lat},${location.lng}:`, error);
+        // console.warn(`Failed to update weather for location ${location.lat},${location.lng}:`, error);
       }
     }
   }
@@ -490,7 +490,7 @@ export class DynamicRouteManager {
           }
         }
       } catch (error) {
-        console.error(`Failed to evaluate route for vehicle ${route.vehicleId}:`, error);
+        // console.error(`Failed to evaluate route for vehicle ${route.vehicleId}:`, error);
       }
     }
   }
@@ -701,7 +701,7 @@ export class DynamicRouteManager {
 
       return optimizationResult.routes[0] || null;
     } catch (error) {
-      console.error('Failed to generate updated route:', error);
+      // console.error('Failed to generate updated route:', error);
       return null;
     }
   }
@@ -738,20 +738,20 @@ export class DynamicRouteManager {
       try {
         callback(update);
       } catch (error) {
-        console.error('Error in route update callback:', error);
+        // console.error('Error in route update callback:', error);
       }
     }
   }
 
   private notifyUpdateAvailable(update: DynamicRouteUpdate): void {
     // In practice, this would send notifications to drivers/dispatchers
-    console.log(`Route update available for vehicle ${update.vehicleId}: ${update.reason}`);
+    // console.log(`Route update available for vehicle ${update.vehicleId}: ${update.reason}`);
     
     for (const callback of Array.from(this.updateCallbacks)) {
       try {
         callback(update);
       } catch (error) {
-        console.error('Error in route update callback:', error);
+        // console.error('Error in route update callback:', error);
       }
     }
   }
@@ -768,12 +768,12 @@ export class DynamicRouteManager {
 
   async approveRouteUpdate(updateId: string): Promise<boolean> {
     // In practice, would store pending updates and apply them when approved
-    console.log(`Route update ${updateId} approved`);
+    // console.log(`Route update ${updateId} approved`);
     return true;
   }
 
   async rejectRouteUpdate(updateId: string, reason: string): Promise<boolean> {
-    console.log(`Route update ${updateId} rejected: ${reason}`);
+    // console.log(`Route update ${updateId} rejected: ${reason}`);
     return true;
   }
 

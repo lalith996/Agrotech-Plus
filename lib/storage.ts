@@ -16,7 +16,7 @@ const uuidv4 = () => {
 // Mock S3 client for development
 const mockS3Client = {
   send: async (command: any) => {
-    console.log('Mock S3 operation:', command.constructor.name);
+    // console.log('Mock S3 operation:', command.constructor.name);
     return { 
       Location: `https://mock-bucket.s3.amazonaws.com/${Date.now()}-mock-file`,
       Key: `mock-${Date.now()}`,
@@ -145,7 +145,7 @@ export class StorageService {
             }
           }
         } catch (imageError) {
-          console.warn('Image processing failed, uploading original:', imageError)
+          // console.warn('Image processing failed, uploading original:', imageError)
         }
       }
 
@@ -172,7 +172,7 @@ export class StorageService {
         thumbnails: thumbnails.length > 0 ? thumbnails : undefined
       }
     } catch (error) {
-      console.error('Upload error:', error)
+      // console.error('Upload error:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Upload failed'
@@ -192,7 +192,7 @@ export class StorageService {
 
       return { success: true }
     } catch (error) {
-      console.error('Delete error:', error)
+      // console.error('Delete error:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Delete failed'
@@ -215,7 +215,7 @@ export class StorageService {
 
       return await mockGetSignedUrl(s3Client, command, { expiresIn })
     } catch (error) {
-      console.error('Get signed URL error:', error)
+      // console.error('Get signed URL error:', error)
       throw error
     }
   }
@@ -234,7 +234,7 @@ export class StorageService {
         lastModified: new Date()
       }
     } catch (error) {
-      console.error('Get file info error:', error)
+      // console.error('Get file info error:', error)
       return null
     }
   }
@@ -258,7 +258,7 @@ export class StorageService {
         }
       ]
     } catch (error) {
-      console.error('List files error:', error)
+      // console.error('List files error:', error)
       return []
     }
   }
@@ -272,11 +272,11 @@ export class StorageService {
   ): Promise<{ success: boolean; error?: string }> {
     try {
       // Mock copy operation
-      console.log(`Mock copy from ${sourceKey} to ${destinationKey}`)
+      // console.log(`Mock copy from ${sourceKey} to ${destinationKey}`)
       
       return { success: true }
     } catch (error) {
-      console.error('Copy error:', error)
+      // console.error('Copy error:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Copy failed'
@@ -302,7 +302,7 @@ export class StorageService {
         }
       }
     } catch (error) {
-      console.error('Get upload URL error:', error)
+      // console.error('Get upload URL error:', error)
       throw error
     }
   }
@@ -340,7 +340,7 @@ export class StorageService {
       // Mock signed upload URL
       return `https://mock-bucket.s3.amazonaws.com/${key}?expires=${expiresIn}`
     } catch (error) {
-      console.error('Get signed upload URL error:', error)
+      // console.error('Get signed upload URL error:', error)
       throw error
     }
   }

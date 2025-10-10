@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(405).json({ error: 'Method not allowed' })
     }
   } catch (error) {
-    console.error('Route optimization API error:', error)
+    // console.error('Route optimization API error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 }
@@ -184,7 +184,7 @@ async function handleOptimizeRoutes(req: NextApiRequest, res: NextApiResponse) {
 
     res.json(response);
   } catch (error) {
-    console.error('Route optimization error:', error);
+    // console.error('Route optimization error:', error);
     res.status(500).json({ 
       success: false, 
       error: 'Failed to optimize routes' 

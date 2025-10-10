@@ -20,7 +20,7 @@ try {
     maxRetries: 3
   });
 } catch (error) {
-  console.warn('Elasticsearch not available, falling back to in-memory search');
+  // console.warn('Elasticsearch not available, falling back to in-memory search');
 }
 
 export interface SearchOptions {
@@ -254,7 +254,7 @@ export class SearchEngine {
         body: document
       });
     } catch (error) {
-      console.error('Elasticsearch indexing error:', error);
+      // console.error('Elasticsearch indexing error:', error);
     }
   }
 
@@ -383,7 +383,7 @@ export class SearchEngine {
       };
 
     } catch (error) {
-      console.error('Elasticsearch search error:', error);
+      // console.error('Elasticsearch search error:', error);
       // Fallback to database search
       return await this.performDatabaseSearch<T>(options);
     }
@@ -463,7 +463,7 @@ export class SearchEngine {
         score: option._score
       }));
     } catch (error) {
-      console.error('Elasticsearch suggestions error:', error);
+      // console.error('Elasticsearch suggestions error:', error);
       return [];
     }
   }

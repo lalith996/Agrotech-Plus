@@ -149,7 +149,7 @@ export default function Products() {
         products,
       })
     } catch (error) {
-      console.error("Error fetching products:", error)
+      // console.error("Error fetching products:", error)
       setData({ products: [], categories: [], pagination: { page: 1, limit: 12, total: 0, pages: 0 } })
     } finally {
       setIsLoading(false)
@@ -170,7 +170,7 @@ export default function Products() {
         location: f.location
       })) || [])
     } catch (error) {
-      console.error("Error fetching farmers:", error)
+      // console.error("Error fetching farmers:", error)
       setFarmers([])
     }
   }

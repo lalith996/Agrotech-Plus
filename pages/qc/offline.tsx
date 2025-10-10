@@ -39,12 +39,12 @@ const QCOffline = () => {
             if (response.ok) {
               await db.clear('qc-entries');
               setEntries([]);
-              console.log('Offline data synced successfully');
+              // console.log('Offline data synced successfully');
             } else {
-              console.error('Failed to sync offline data');
+              // console.error('Failed to sync offline data');
             }
           } catch (error) {
-            console.error('Error syncing offline data:', error);
+            // console.error('Error syncing offline data:', error);
           }
         }
       }
@@ -73,7 +73,7 @@ const QCOffline = () => {
         },
       });
       await db.add('qc-entries', newEntry);
-      console.log('Data saved locally');
+      // console.log('Data saved locally');
     } else {
       try {
         const response = await fetch('/api/qc/entries', {
@@ -85,12 +85,12 @@ const QCOffline = () => {
         });
 
         if (response.ok) {
-          console.log('Data saved to server');
+          // console.log('Data saved to server');
         } else {
-          console.error('Failed to save data to server');
+          // console.error('Failed to save data to server');
         }
       } catch (error) {
-        console.error('Error saving data to server:', error);
+        // console.error('Error saving data to server:', error);
       }
     }
     e.currentTarget.reset();

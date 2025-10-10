@@ -70,7 +70,7 @@ export class CameraService {
 
       return this.stream;
     } catch (error) {
-      console.error('Camera initialization error:', error);
+      // console.error('Camera initialization error:', error);
       throw new Error('Failed to access camera. Please check permissions.');
     }
   }
@@ -169,7 +169,7 @@ export class CameraService {
       const devices = await navigator.mediaDevices.enumerateDevices();
       return devices.filter(device => device.kind === 'videoinput');
     } catch (error) {
-      console.error('Error getting cameras:', error);
+      // console.error('Error getting cameras:', error);
       return [];
     }
   }
@@ -212,7 +212,7 @@ export class BarcodeService {
 
       return null;
     } catch (error) {
-      console.error('Barcode scanning error:', error);
+      // console.error('Barcode scanning error:', error);
       return null;
     }
   }
@@ -292,7 +292,7 @@ export class BarcodeService {
           onScan(result);
         }
       } catch (error) {
-        console.error('Continuous scan error:', error);
+        // console.error('Continuous scan error:', error);
       }
       
       if (isScanning) {
@@ -459,7 +459,7 @@ export class AudioRecordingService {
 
       this.mediaRecorder.start(1000); // Collect data every second
     } catch (error) {
-      console.error('Audio recording error:', error);
+      // console.error('Audio recording error:', error);
       throw new Error('Failed to start audio recording. Please check microphone permissions.');
     }
   }

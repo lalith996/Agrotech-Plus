@@ -74,7 +74,7 @@ export function BarcodeScanner({
         startScanning()
       }
     } catch (error) {
-      console.error('Scanner initialization error:', error)
+      // console.error('Scanner initialization error:', error)
       toast.error('Failed to initialize camera scanner')
     }
   }
@@ -134,7 +134,7 @@ export function BarcodeScanner({
         toast.error('No barcode found in the image')
       }
     } catch (error) {
-      console.error('File scan error:', error)
+      // console.error('File scan error:', error)
       toast.error('Failed to scan barcode from image')
     }
 

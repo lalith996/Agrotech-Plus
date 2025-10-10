@@ -72,7 +72,7 @@ export default async function handler(
       message: "User created successfully",
     })
   } catch (error) {
-    console.error("Registration error:", error)
+    // console.error("Registration error:", error)
     
     if (error instanceof Error) {
       return res.status(400).json({ message: error.message })

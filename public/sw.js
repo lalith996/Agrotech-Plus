@@ -23,12 +23,12 @@ const API_CACHE_URLS = [
 
 // Install event - cache static resources
 self.addEventListener('install', (event) => {
-  console.log('Service Worker installing...');
+  // console.log('Service Worker installing...');
   
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Caching static resources');
+        // console.log('Caching static resources');
         return cache.addAll(STATIC_CACHE_URLS);
       })
       .then(() => {
@@ -40,7 +40,7 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker activating...');
+  // console.log('Service Worker activating...');
   
   event.waitUntil(
     caches.keys()
@@ -48,7 +48,7 @@ self.addEventListener('activate', (event) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
             if (cacheName !== CACHE_NAME) {
-              console.log('Deleting old cache:', cacheName);
+              // console.log('Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
@@ -97,7 +97,7 @@ async function networkFirstStrategy(request) {
     
     return networkResponse;
   } catch (error) {
-    console.log('Network failed, trying cache:', error);
+    // console.log('Network failed, trying cache:', error);
     
     const cachedResponse = await caches.match(request);
     if (cachedResponse) {
@@ -136,7 +136,7 @@ async function cacheFirstStrategy(request) {
     
     return networkResponse;
   } catch (error) {
-    console.log('Failed to fetch static asset:', error);
+    // console.log('Failed to fetch static asset:', error);
     throw error;
   }
 }
@@ -245,10 +245,10 @@ async function syncOfflineSubmissions() {
       
       if (response.ok) {
         await removeOfflineSubmission(submission.id);
-        console.log('Synced offline submission:', submission.id);
+        // console.log('Synced offline submission:', submission.id);
       }
     } catch (error) {
-      console.log('Failed to sync submission:', submission.id, error);
+      // console.log('Failed to sync submission:', submission.id, error);
     }
   }
 }

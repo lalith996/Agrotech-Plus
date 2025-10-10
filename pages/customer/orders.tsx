@@ -27,7 +27,7 @@ const CustomerOrdersPage = () => {
         setOrders(data.orders);
       } catch (err) {
         setError('Failed to load orders.');
-        console.error(err);
+        // console.error(err);
       } finally {
         setIsLoading(false);
       }

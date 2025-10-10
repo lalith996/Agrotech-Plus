@@ -398,16 +398,16 @@ export class QCSyncService {
 
           if (response.ok) {
             await this.storage.markAsSynced(entry.id);
-            console.log(`Synced QC entry: ${entry.id}`);
+            // console.log(`Synced QC entry: ${entry.id}`);
           } else {
             const errorText = await response.text();
             await this.storage.markSyncFailed(entry.id, errorText);
-            console.error(`Failed to sync QC entry ${entry.id}:`, errorText);
+            // console.error(`Failed to sync QC entry ${entry.id}:`, errorText);
           }
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
           await this.storage.markSyncFailed(entry.id, errorMessage);
-          console.error(`Sync error for entry ${entry.id}:`, error);
+          // console.error(`Sync error for entry ${entry.id}:`, error);
         }
       }
 

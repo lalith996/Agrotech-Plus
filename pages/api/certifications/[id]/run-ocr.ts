@@ -57,7 +57,7 @@ export default async function handler(
     res.status(200).json(updatedCertification);
 
   } catch (error) {
-    console.error(`Error running OCR for certification ${id}:`, error);
+    // console.error(`Error running OCR for certification ${id}:`, error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

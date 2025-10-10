@@ -452,7 +452,7 @@ export class FileUploadService {
       };
 
     } catch (error) {
-      console.error('File upload error:', error);
+      // console.error('File upload error:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Upload failed'
@@ -501,7 +501,7 @@ export class FileUploadService {
       return { success: true };
 
     } catch (error) {
-      console.error('File deletion error:', error);
+      // console.error('File deletion error:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Deletion failed'

@@ -52,7 +52,7 @@ export default async function handler(
 
       res.status(200).json({ farmer });
     } catch (error) {
-      console.error("Admin farmer fetch error:", error);
+      // console.error("Admin farmer fetch error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   } else if (req.method === "PUT") {
@@ -80,7 +80,7 @@ export default async function handler(
       });
 
     } catch (error) {
-      console.error("Farmer update error:", error);
+      // console.error("Farmer update error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   } else {

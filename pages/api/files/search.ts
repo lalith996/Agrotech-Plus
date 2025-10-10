@@ -42,7 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
   } catch (error) {
-    console.error('File search error:', error);
+    // console.error('File search error:', error);
     res.status(500).json({
       error: error instanceof Error ? error.message : 'Search failed'
     });

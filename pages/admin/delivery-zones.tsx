@@ -78,7 +78,7 @@ export default function DeliveryZones() {
       const data = await response.json()
       setZones(data.zones)
     } catch (error) {
-      console.error("Error fetching zones:", error)
+      // console.error("Error fetching zones:", error)
     } finally {
       setIsLoading(false)
     }
@@ -99,7 +99,7 @@ export default function DeliveryZones() {
       setZoneForm({ name: "", description: "" })
       fetchZones()
     } catch (error) {
-      console.error("Error creating zone:", error)
+      // console.error("Error creating zone:", error)
     }
   }
 
@@ -122,7 +122,7 @@ export default function DeliveryZones() {
       setSlotForm({ dayOfWeek: "", startTime: "", endTime: "", maxOrders: "50" })
       fetchZones()
     } catch (error) {
-      console.error("Error creating slot:", error)
+      // console.error("Error creating slot:", error)
     }
   }
 

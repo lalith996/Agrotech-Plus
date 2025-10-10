@@ -111,7 +111,7 @@ export default function ProfilePage() {
         phone: data.user.customer?.phone || "",
       })
     } catch (error) {
-      console.error("Error fetching profile:", error)
+      // console.error("Error fetching profile:", error)
       toast.error("Failed to load profile")
     } finally {
       setIsLoading(false)
@@ -134,7 +134,7 @@ export default function ProfilePage() {
       toast.success("Profile updated successfully!")
       fetchProfile()
     } catch (error) {
-      console.error("Error updating profile:", error)
+      // console.error("Error updating profile:", error)
       toast.error("Failed to update profile")
     } finally {
       setIsSaving(false)
@@ -181,7 +181,7 @@ export default function ProfilePage() {
       })
       fetchProfile()
     } catch (error) {
-      console.error("Error adding address:", error)
+      // console.error("Error adding address:", error)
       toast.error("Failed to add address")
     }
   }
@@ -199,7 +199,7 @@ export default function ProfilePage() {
       toast.success("Address deleted successfully!")
       fetchProfile()
     } catch (error) {
-      console.error("Error deleting address:", error)
+      // console.error("Error deleting address:", error)
       toast.error("Failed to delete address")
     }
   }
@@ -220,7 +220,7 @@ export default function ProfilePage() {
       toast.success("Default address updated!")
       fetchProfile()
     } catch (error) {
-      console.error("Error updating address:", error)
+      // console.error("Error updating address:", error)
       toast.error("Failed to update address")
     }
   }

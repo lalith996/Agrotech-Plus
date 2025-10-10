@@ -62,7 +62,7 @@ class OCRService {
       this.worker = await Tesseract.createWorker('eng', 1, {
         logger: m => {
           if (m.status === 'recognizing text') {
-            console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
+            // console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
           }
         }
       });
@@ -72,9 +72,9 @@ class OCRService {
         tessedit_pageseg_mode: Tesseract.PSM.AUTO,
       });
 
-      console.log('OCR Worker initialized successfully');
+      // console.log('OCR Worker initialized successfully');
     } catch (error) {
-      console.error('Failed to initialize OCR worker:', error);
+      // console.error('Failed to initialize OCR worker:', error);
       throw error;
     }
   }
@@ -105,7 +105,7 @@ class OCRService {
         .png() // Convert to PNG for better OCR
         .toBuffer();
     } catch (error) {
-      console.error('Image preprocessing error:', error);
+      // console.error('Image preprocessing error:', error);
       return imageBuffer; // Return original if preprocessing fails
     }
   }
@@ -150,7 +150,7 @@ class OCRService {
 
       return result;
     } catch (error) {
-      console.error('OCR extraction error:', error);
+      // console.error('OCR extraction error:', error);
       throw error;
     }
   }
@@ -308,7 +308,7 @@ class OCRService {
 
       return extractedData;
     } catch (error) {
-      console.error('Data extraction error:', error);
+      // console.error('Data extraction error:', error);
       return extractedData;
     }
   }
@@ -337,7 +337,7 @@ class OCRService {
 
       return { ocrResult, extractedData };
     } catch (error) {
-      console.error('File processing error:', error);
+      // console.error('File processing error:', error);
       throw error;
     }
   }
@@ -367,7 +367,7 @@ class OCRService {
       //   }
       // });
     } catch (error) {
-      console.error('Save OCR results error:', error);
+      // console.error('Save OCR results error:', error);
       throw error;
     }
   }
@@ -445,7 +445,7 @@ class OCRService {
         }
       };
     } catch (error) {
-      console.error('Search by text error:', error);
+      // console.error('Search by text error:', error);
       throw error;
     }
   }

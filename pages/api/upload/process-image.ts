@@ -96,7 +96,7 @@ export default async function handler(
     });
 
   } catch (error) {
-    console.error("Error processing image:", error);
+    // console.error("Error processing image:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

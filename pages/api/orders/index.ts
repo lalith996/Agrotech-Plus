@@ -121,7 +121,7 @@ export default async function handler(
         },
       });
     } catch (error) {
-      console.error("Orders fetch error:", error);
+      // console.error("Orders fetch error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   } else if (req.method === "POST") {

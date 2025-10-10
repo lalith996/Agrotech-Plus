@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(405).json({ error: 'Method not allowed' })
     }
   } catch (error) {
-    console.error('Admin files API error:', error)
+    // console.error('Admin files API error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 }
@@ -154,7 +154,7 @@ async function handleGetFiles(req: NextApiRequest, res: NextApiResponse) {
       }
     });
   } catch (error) {
-    console.error('Get files error:', error);
+    // console.error('Get files error:', error);
     res.status(500).json({ error: 'Failed to fetch files' });
   }
 }
@@ -168,14 +168,14 @@ async function handleDeleteFile(req: NextApiRequest, res: NextApiResponse) {
     }
 
     // Mock file deletion (in real implementation use prisma.file.delete and S3 deletion)
-    console.log(`Mock deleting file: ${fileId}`);
+    // console.log(`Mock deleting file: ${fileId}`);
 
     res.json({ 
       success: true, 
       message: 'File deleted successfully' 
     });
   } catch (error) {
-    console.error('Delete file error:', error);
+    // console.error('Delete file error:', error);
     res.status(500).json({ error: 'Failed to delete file' });
   }
 }

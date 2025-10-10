@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Starting seed...')
+  // console.log('🌱 Starting seed...')
 
   // Create admin user
   const adminUser = await prisma.user.create({
@@ -308,18 +308,18 @@ async function main() {
     })
   }
 
-  console.log('✅ Seed completed successfully!')
-  console.log('📧 Admin: admin@agrotrack.com')
-  console.log('📧 Operations: ops@agrotrack.com')
-  console.log('📧 Farmer 1: farmer1@agrotrack.com')
-  console.log('📧 Farmer 2: farmer2@agrotrack.com')
-  console.log('📧 Customer 1: priya@example.com')
-  console.log('📧 Customer 2: rajesh@example.com')
+  // console.log('✅ Seed completed successfully!')
+  // console.log('📧 Admin: admin@agrotrack.com')
+  // console.log('📧 Operations: ops@agrotrack.com')
+  // console.log('📧 Farmer 1: farmer1@agrotrack.com')
+  // console.log('📧 Farmer 2: farmer2@agrotrack.com')
+  // console.log('📧 Customer 1: priya@example.com')
+  // console.log('📧 Customer 2: rajesh@example.com')
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Seed failed:', e)
+    // console.error('❌ Seed failed:', e)
     process.exit(1)
   })
   .finally(async () => {

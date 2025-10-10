@@ -46,7 +46,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, userId: stri
       preferences
     });
   } catch (error) {
-    console.error('Get preferences error:', error);
+    // console.error('Get preferences error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to get preferences'
@@ -77,7 +77,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, userId: s
       preferences: updatedPreferences
     });
   } catch (error) {
-    console.error('Update preferences error:', error);
+    // console.error('Update preferences error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to update preferences'

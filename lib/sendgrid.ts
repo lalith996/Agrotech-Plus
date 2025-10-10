@@ -5,7 +5,7 @@ const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 if (SENDGRID_API_KEY) {
   sgMail.setApiKey(SENDGRID_API_KEY);
 } else {
-  console.warn('SENDGRID_API_KEY is not set. Email notifications will be disabled.');
+  // console.warn('SENDGRID_API_KEY is not set. Email notifications will be disabled.');
 }
 
 interface MailOptions {
@@ -17,7 +17,7 @@ interface MailOptions {
 
 export const sendEmail = async (options: MailOptions) => {
   if (!SENDGRID_API_KEY) {
-    console.log('Email not sent: SENDGRID_API_KEY is missing.');
+    // console.log('Email not sent: SENDGRID_API_KEY is missing.');
     // In a real app, you might want to return a more specific error
     // or have a fallback mechanism.
     return Promise.resolve(); 
@@ -34,12 +34,12 @@ export const sendEmail = async (options: MailOptions) => {
 
   try {
     await sgMail.send(msg);
-    console.log(`Email sent to ${options.to}`);
+    // console.log(`Email sent to ${options.to}`);
   } catch (error) {
-    console.error('Error sending email:', error);
+    // console.error('Error sending email:', error);
 
     if (error.response) {
-      console.error(error.response.body)
+      // console.error(error.response.body)
     }
     // Depending on the context, you might want to re-throw the error
     // throw error;
