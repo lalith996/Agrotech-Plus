@@ -45,3 +45,6 @@ export const sendEmail = async (options: MailOptions) => {
     // throw error;
   }
 };
+
+// Export sgMail as default for backward compatibility
+export default sgMail;

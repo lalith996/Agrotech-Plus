@@ -34,3 +34,6 @@ export const sendSms = async (options: SmsOptions) => {
     // throw error;
   }
 };
+
+// Export client as default for backward compatibility
+export default client;
