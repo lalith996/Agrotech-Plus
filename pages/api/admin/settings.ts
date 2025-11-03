@@ -5,6 +5,8 @@ import { UserRole } from '@prisma/client'
 import { z } from 'zod'
 import fs from 'fs/promises'
 import path from 'path'
+import { withCSRF, adminCSRF } from '@/lib/csrf-middleware'
+import { logInfo, logError } from '@/lib/logger'
 
 // Settings validation schema
 const settingsSchema = z.object({
@@ -141,7 +143,7 @@ async function saveSettings(settings: any) {
   await fs.writeFile(SETTINGS_FILE_PATH, JSON.stringify(settings, null, 2))
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const session = await getServerSession(req, res, authOptions)
     
@@ -181,7 +183,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       await saveSettings(settings)
 
       // Log the settings change
-      // console.log(`Settings updated by user ${session.user.id} at ${new Date().toISOString()}`)
+      logInfo('Admin settings updated', {
+        userId: session.user.id,
+        email: session.user.email,
+        timestamp: new Date().toISOString(),
+      })
 
       return res.status(200).json({
         success: true,
@@ -302,10 +308,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ message: 'Method not allowed' })
 
   } catch (error) {
-    // console.error('Error handling settings request:', error)
+    logError('Error handling settings request', error instanceof Error ? error : new Error(String(error)), {
+      userId: req.headers['user-id'],
+      method: req.method,
+    })
     return res.status(500).json({
       success: false,
       message: 'Internal server error'
     })
   }
 }
+
+// Export with CSRF protection for admin mutations
+export default withCSRF(handler, adminCSRF)
