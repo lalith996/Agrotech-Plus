@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from '@/lib/prisma'
 import { cacheService } from '@/lib/redis'
 import { logError, logWarn } from '@/lib/logger'
+import { sendSuccess, sendInternalError } from '@/lib/api-response'
 
 interface ServiceCheck {
   status: 'up' | 'down' | 'degraded'
@@ -156,14 +157,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       },
     }
 
-    // Return appropriate status code
+    // Return appropriate status code based on health status
     const statusCode =
       overallStatus === 'healthy' ? 200 : overallStatus === 'degraded' ? 200 : 503
 
-    res.status(statusCode).json(healthCheck)
+    return sendSuccess(res, healthCheck, undefined, statusCode)
   } catch (error) {
-    logError('Health check error', error instanceof Error ? error : new Error(String(error)))
-
     const errorHealthCheck: HealthCheck = {
       status: 'unhealthy',
       timestamp: new Date().toISOString(),
@@ -189,6 +188,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       },
     }
 
-    res.status(503).json(errorHealthCheck)
+    return sendInternalError(
+      res,
+      error instanceof Error ? error : new Error(String(error)),
+      { healthCheck: errorHealthCheck }
+    )
   }
 }
