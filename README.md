@@ -74,20 +74,35 @@ lib/
 ## Tech Stack
 
 - **Framework**: Next.js 14
-- **Authentication**: NextAuth.js
+- **Authentication**: Stack Auth (replacing NextAuth.js)
 - **Database**: PostgreSQL + Prisma
 - **Styling**: Tailwind CSS
 - **Language**: TypeScript
 
 ## Environment Variables
 
-Create `.env.local`:
+⚠️ **IMPORTANT**: Never commit your `.env` file to version control!
+
+1. Copy the example environment file:
+```bash
+cp .env.example .env
+```
+
+2. Update `.env` with your actual credentials:
 
 ```env
-DATABASE_URL="your-database-url"
-NEXTAUTH_SECRET="your-secret-key"
-NEXTAUTH_URL="http://localhost:3000"
+# Database
+DATABASE_URL="postgresql://username:password@host:port/database"
+
+# Stack Auth Configuration
+NEXT_PUBLIC_STACK_PROJECT_ID="your-stack-project-id"
+NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY="your-stack-publishable-key"
+STACK_SECRET_SERVER_KEY="your-stack-secret-key"
+
+# Other optional configurations...
 ```
+
+3. See `.env.example` for a complete list of available environment variables.
 
 ## Clean & Simple
 
