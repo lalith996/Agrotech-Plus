@@ -82,6 +82,7 @@ model User {
   email         String    @unique
   emailVerified DateTime?
   image         String?
+  password      String?   // Hashed password for credentials login
   role          UserRole  @default(CUSTOMER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -114,10 +115,11 @@ model Customer {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   addresses     Address[]
   subscriptions Subscription[]
   orders        Order[]
+  reviews       ProductReview[]
 
   @@map("customers")
 }
@@ -177,8 +179,31 @@ model Product {
   subscriptionItems SubscriptionItem[]
   orderItems        OrderItem[]
   qcResults         QCResult[]
+  reviews           ProductReview[]
 
+  @@index([farmerId])
+  @@index([category])
+  @@index([isActive])
+  @@index([createdAt])
   @@map("products")
+}
+
+model ProductReview {
+  id         String   @id @default(cuid())
+  productId  String
+  customerId String
+  rating     Int      // 1-5 stars
+  comment    String?  @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, customerId]) // One review per customer per product
+  @@index([productId])
+  @@index([customerId])
+  @@map("product_reviews")
 }
 
 
@@ -235,6 +260,10 @@ model Order {
   routes       DeliveryRoute[] @relation("RouteOrders")
   routeOrders  RouteOrder[]
 
+  @@index([customerId])
+  @@index([status])
+  @@index([deliveryDate])
+  @@index([createdAt])
   @@map("orders")
 }
 
@@ -263,6 +292,9 @@ model FarmerDelivery {
   farmer    Farmer     @relation(fields: [farmerId], references: [id], onDelete: Cascade)
   qcResults QCResult[]
 
+  @@index([farmerId])
+  @@index([deliveryDate])
+  @@index([status])
   @@map("farmer_deliveries")
 }
 
@@ -284,6 +316,9 @@ model QCResult {
   product        Product        @relation(fields: [productId], references: [id])
   farmer         Farmer         @relation(fields: [farmerId], references: [id], onDelete: Cascade)
 
+  @@index([farmerId])
+  @@index([productId])
+  @@index([timestamp])
   @@map("qc_results")
 }
 
