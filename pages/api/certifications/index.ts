@@ -1,43 +1,60 @@
-
 import { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient } from "@prisma/client";
-import { getSession } from "next-auth/react";
-
-const prisma = new PrismaClient();
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { UserRole } from "@prisma/client";
+import { paginateWithOffset, sendPaginatedResponse } from "@/lib/pagination";
+import { sendUnauthorized, sendForbidden, sendCreated, sendBadRequest, sendMethodNotAllowed, sendInternalError } from "@/lib/api-response";
+import { logError, logInfo } from "@/lib/logger";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getSession({ req });
+  const session = await getServerSession(req, res, authOptions);
 
-  if (!session) {
-    return res.status(401).json({ message: "Unauthorized" });
+  if (!session?.user?.id) {
+    return sendUnauthorized(res);
   }
 
-  // Assuming the user is a farmer and their farmer ID is stored in the session
-  // You might need to adjust this based on your actual session structure
-  const farmerId = session.user?.farmer?.id;
+  if (session.user.role !== UserRole.FARMER) {
+    return sendForbidden(res, "Only farmers can manage certifications");
+  }
 
-  if (!farmerId) {
-    return res.status(403).json({ message: "Forbidden: User is not a farmer" });
+  // Get farmer profile
+  const farmer = await prisma.farmer.findUnique({
+    where: { userId: session.user.id },
+    select: { id: true }
+  });
+
+  if (!farmer) {
+    return sendForbidden(res, "Farmer profile not found");
   }
 
   if (req.method === "GET") {
     try {
-      const certifications = await prisma.certification.findMany({
-        where: { farmerId },
-        include: {
-          file: true, // Include the associated file details
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
-      res.status(200).json(certifications);
+      const result = await paginateWithOffset(
+        prisma.certification,
+        req,
+        {
+          where: { farmerId: farmer.id },
+          include: {
+            file: true, // Include the associated file details
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+          defaultLimit: 20,
+          maxLimit: 100,
+        }
+      );
+
+      return sendPaginatedResponse(res, result);
     } catch (error) {
-      // console.error("Error fetching certifications:", error);
-      res.status(500).json({ message: "Internal server error" });
+      return sendInternalError(res, error instanceof Error ? error : new Error(String(error)), {
+        farmerId: farmer.id,
+        userId: session.user.id,
+      });
     }
   } else if (req.method === "POST") {
     try {
@@ -50,7 +67,9 @@ export default async function handler(
       } = req.body;
 
       if (!name || !issuingBody || !issueDate || !fileId) {
-        return res.status(400).json({ message: "Missing required fields" });
+        return sendBadRequest(res, "Missing required fields", {
+          required: ["name", "issuingBody", "issueDate", "fileId"],
+        });
       }
 
       const newCertification = await prisma.certification.create({
@@ -59,7 +78,7 @@ export default async function handler(
           issuingBody,
           issueDate: new Date(issueDate),
           expiryDate: expiryDate ? new Date(expiryDate) : null,
-          farmerId,
+          farmerId: farmer.id,
           fileId,
         },
         include: {
@@ -67,13 +86,20 @@ export default async function handler(
         },
       });
 
-      res.status(201).json(newCertification);
+      logInfo("Certification created", {
+        certificationId: newCertification.id,
+        farmerId: farmer.id,
+        userId: session.user.id,
+      });
+
+      return sendCreated(res, newCertification, "Certification created successfully");
     } catch (error) {
-      // console.error("Error creating certification:", error);
-      res.status(500).json({ message: "Internal server error" });
+      return sendInternalError(res, error instanceof Error ? error : new Error(String(error)), {
+        farmerId: farmer.id,
+        userId: session.user.id,
+      });
     }
   } else {
-    res.setHeader("Allow", ["GET", "POST"]);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    return sendMethodNotAllowed(res, ["GET", "POST"]);
   }
 }

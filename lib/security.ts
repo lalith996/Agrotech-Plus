@@ -31,15 +31,9 @@ export class InputSanitizer {
       .trim()
   }
 
-  // Sanitize SQL input to prevent injection
-  static sanitizeSql(input: string): string {
-    return input
-      .replace(/['";\\]/g, '') // Remove dangerous SQL characters
-      .replace(/--/g, '') // Remove SQL comments
-      .replace(/\/\*/g, '') // Remove SQL block comments start
-      .replace(/\*\//g, '') // Remove SQL block comments end
-      .trim()
-  }
+  // Note: SQL sanitization is NOT needed when using Prisma ORM
+  // Prisma uses parameterized queries which prevent SQL injection automatically
+  // This method has been removed - use Prisma queries directly
 
   // Sanitize file names
   static sanitizeFileName(fileName: string): string {
@@ -160,7 +154,13 @@ export class XSSProtection {
 
 // CSRF Protection
 export class CSRFProtection {
-  private static readonly SECRET_KEY = process.env.CSRF_SECRET || 'default-csrf-secret'
+  private static readonly SECRET_KEY = process.env.CSRF_SECRET || (() => {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('CSRF_SECRET must be set in production environment');
+    }
+    console.warn('⚠️  WARNING: Using default CSRF_SECRET in development. Set CSRF_SECRET in production!');
+    return 'development-csrf-secret-change-in-production';
+  })()
 
   // Generate CSRF token
   static generateToken(sessionId: string): string {
@@ -291,7 +291,13 @@ export class RateLimiter {
 export class DataEncryption {
   private static readonly ALGORITHM = 'aes-256-gcm'
   private static readonly KEY = crypto.scryptSync(
-    process.env.ENCRYPTION_KEY || 'default-encryption-key',
+    process.env.ENCRYPTION_KEY || (() => {
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error('ENCRYPTION_KEY must be set in production environment');
+      }
+      console.warn('⚠️  WARNING: Using default ENCRYPTION_KEY in development. Set ENCRYPTION_KEY in production!');
+      return 'development-encryption-key-change-in-production';
+    })(),
     'salt',
     32
   )
@@ -299,13 +305,13 @@ export class DataEncryption {
   // Encrypt sensitive data
   static encrypt(text: string): string {
     const iv = crypto.randomBytes(16)
-    const cipher = crypto.createCipher(this.ALGORITHM, this.KEY)
-    
+    const cipher = crypto.createCipheriv(this.ALGORITHM, this.KEY, iv)
+
     let encrypted = cipher.update(text, 'utf8', 'hex')
     encrypted += cipher.final('hex')
-    
+
     const authTag = cipher.getAuthTag()
-    
+
     return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted}`
   }
 
@@ -313,16 +319,16 @@ export class DataEncryption {
   static decrypt(encryptedText: string): string {
     try {
       const [ivHex, authTagHex, encrypted] = encryptedText.split(':')
-      
+
       const iv = Buffer.from(ivHex, 'hex')
       const authTag = Buffer.from(authTagHex, 'hex')
-      
-      const decipher = crypto.createDecipher(this.ALGORITHM, this.KEY)
+
+      const decipher = crypto.createDecipheriv(this.ALGORITHM, this.KEY, iv)
       decipher.setAuthTag(authTag)
-      
+
       let decrypted = decipher.update(encrypted, 'hex', 'utf8')
       decrypted += decipher.final('utf8')
-      
+
       return decrypted
     } catch {
       throw new Error('Failed to decrypt data')

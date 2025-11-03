@@ -1,8 +1,13 @@
 
 import { NextApiRequest, NextApiResponse } from "next"
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { getSession } from "next-auth/react"
-import { productSchema } from "@/lib/validations" // Assuming you have a product validation schema
+import { productSchema } from "@/lib/validations"
+import { ProductWhereInput, HTTP_STATUS, ApiErrorCode, createErrorResponse, createSuccessResponse } from "@/types/api"
+import { logError, logInfo } from "@/lib/logger"
+import { validatePagination, sanitizeSearchQuery } from "@/lib/query-validation"
+import { Prisma } from "@prisma/client"
 
 export default async function handler(
   req: NextApiRequest,
@@ -25,16 +30,22 @@ export default async function handler(
 
       const categories = req.query["categories[]"]
       const categoriesArray = categories ? (Array.isArray(categories) ? categories : [categories]) : []
-      
+
       const farmerIds = req.query["farmerIds[]"]
       const farmerIdsArray = farmerIds ? (Array.isArray(farmerIds) ? farmerIds : [farmerIds]) : []
 
-      const pageNum = parseInt(page as string)
-      const limitNum = parseInt(limit as string)
-      const skip = (pageNum - 1) * limitNum
+      // Validate pagination parameters
+      const { page: pageNum, limit: limitNum, skip } = validatePagination(page, limit, {
+        defaultPage: 1,
+        defaultLimit: 12,
+        maxLimit: 100,
+      })
 
-      // Build where clause
-      const where: any = {}
+      // Sanitize search query
+      const searchQuery = sanitizeSearchQuery(search)
+
+      // Build where clause with proper types
+      const where: Prisma.ProductWhereInput = {}
 
       if (availability === "in_stock") {
         where.isActive = true
@@ -55,10 +66,10 @@ export default async function handler(
         where.category = category
       }
 
-      if (search) {
+      if (searchQuery) {
         where.OR = [
-          { name: { contains: search as string, mode: "insensitive" } },
-          { description: { contains: search as string, mode: "insensitive" } },
+          { name: { contains: searchQuery, mode: "insensitive" } },
+          { description: { contains: searchQuery, mode: "insensitive" } },
         ]
       }
 
@@ -74,8 +85,8 @@ export default async function handler(
         if (maxPrice) where.basePrice.lte = parseFloat(maxPrice as string)
       }
 
-      // Get products with farmer information
-      let products = await prisma.product.findMany({
+      // Get products with farmer information and aggregate ratings
+      const products = await prisma.product.findMany({
         where,
         include: {
           farmer: {
@@ -87,26 +98,38 @@ export default async function handler(
               },
             },
           },
+          _count: {
+            select: {
+              reviews: true,
+            },
+          },
         },
+        skip,
+        take: limitNum,
         orderBy: {
           createdAt: "desc",
         },
       })
 
-      const productsWithRating = products.map(product => ({
-        ...product,
-        rating: (product.id.charCodeAt(0) % 5) + 1
-      }))
+      // Calculate average rating for each product
+      const productsWithRating = await Promise.all(
+        products.map(async (product) => {
+          const reviews = await prisma.productReview.aggregate({
+            where: { productId: product.id },
+            _avg: { rating: true },
+          });
 
-      let filteredProducts = productsWithRating
-      
-      if (minRating) {
-        const minRatingNum = parseInt(minRating as string)
-        filteredProducts = filteredProducts.filter(p => p.rating >= minRatingNum)
-      }
+          return {
+            ...product,
+            rating: reviews._avg.rating || 0,
+            reviewCount: product._count.reviews,
+          };
+        })
+      );
 
-      const total = filteredProducts.length
-      const paginatedProducts = filteredProducts.slice(skip, skip + limitNum)
+      // Get total count for pagination
+      const total = await prisma.product.count({ where })
+      const paginatedProducts = productsWithRating
 
       // Get unique categories for filtering
       const uniqueCategories = await prisma.product.findMany({
@@ -126,11 +149,19 @@ export default async function handler(
         },
       })
     } catch (error) {
-      // console.error("Products fetch error:", error)
-      res.status(500).json({ message: "Internal server error" })
+      logError("Products fetch error", error instanceof Error ? error : new Error(String(error)), {
+        method: req.method,
+        path: req.url,
+      })
+      return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(
+        createErrorResponse(
+          ApiErrorCode.DATABASE_ERROR,
+          "Failed to fetch products"
+        )
+      )
     }
   } else if (req.method === "POST") {
-    const session = await getSession({ req })
+    const session = await getServerSession(req, res, authOptions)
 
     if (!session || session.user.role !== "FARMER") {
       return res.status(401).json({ message: "Unauthorized" })
@@ -155,12 +186,28 @@ export default async function handler(
       })
 
       res.status(201).json(newProduct)
-    } catch (error: any) {
-      // console.error("Product creation error:", error)
-      if (error.name === "ZodError") {
-        return res.status(400).json({ message: "Validation error", errors: error.errors })
+    } catch (error) {
+      logError("Product creation error", error instanceof Error ? error : new Error(String(error)), {
+        method: req.method,
+        farmerId: session?.user?.id,
+      })
+
+      if (error instanceof Error && error.name === "ZodError") {
+        return res.status(HTTP_STATUS.BAD_REQUEST).json(
+          createErrorResponse(
+            ApiErrorCode.VALIDATION_ERROR,
+            "Invalid product data",
+            (error as any).errors
+          )
+        )
       }
-      res.status(500).json({ message: "Internal server error" })
+
+      return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(
+        createErrorResponse(
+          ApiErrorCode.INTERNAL_SERVER_ERROR,
+          "Failed to create product"
+        )
+      )
     }
   } else {
     res.setHeader("Allow", ["GET", "POST"])

@@ -3,8 +3,10 @@ import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
 import { signUpSchema } from "@/lib/validations"
 import { UserRole } from "@prisma/client"
+import { withRateLimit, registrationRateLimit } from "@/lib/rate-limit"
+import { logError, logInfo } from "@/lib/logger"
 
-export default async function handler(
+async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -35,6 +37,7 @@ export default async function handler(
         data: {
           name,
           email,
+          password: hashedPassword,
           role,
         },
       })
@@ -67,17 +70,30 @@ export default async function handler(
 
     // Return user without sensitive data
     const { id, name: userName, email: userEmail, role: userRole } = result
+
+    logInfo("User registered successfully", {
+      userId: id,
+      email: userEmail,
+      role: userRole,
+    })
+
     res.status(201).json({
       user: { id, name: userName, email: userEmail, role: userRole },
       message: "User created successfully",
     })
   } catch (error) {
-    // console.error("Registration error:", error)
-    
+    logError("Registration error", error instanceof Error ? error : new Error(String(error)), {
+      email: req.body?.email,
+      role: req.body?.role,
+    })
+
     if (error instanceof Error) {
       return res.status(400).json({ message: error.message })
     }
-    
+
     res.status(500).json({ message: "Internal server error" })
   }
 }
+
+// Export with rate limiting
+export default withRateLimit(handler, registrationRateLimit)

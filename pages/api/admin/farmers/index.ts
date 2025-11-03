@@ -2,7 +2,10 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { UserRole } from "@prisma/client"
+import { UserRole, Prisma } from "@prisma/client"
+import { HTTP_STATUS, ApiErrorCode, createErrorResponse } from "@/types/api"
+import { logError } from "@/lib/logger"
+import { sanitizeSearchQuery } from "@/lib/query-validation"
 
 export default async function handler(
   req: NextApiRequest,
@@ -22,14 +25,17 @@ export default async function handler(
     try {
       const { search, status } = req.query
 
-      const whereClause: any = {}
+      // Sanitize search query
+      const searchQuery = sanitizeSearchQuery(search)
 
-      if (search) {
+      const whereClause: Prisma.FarmerWhereInput = {}
+
+      if (searchQuery) {
         whereClause.OR = [
-          { farmName: { contains: search as string, mode: "insensitive" } },
-          { location: { contains: search as string, mode: "insensitive" } },
-          { user: { name: { contains: search as string, mode: "insensitive" } } },
-          { user: { email: { contains: search as string, mode: "insensitive" } } },
+          { farmName: { contains: searchQuery, mode: "insensitive" } },
+          { location: { contains: searchQuery, mode: "insensitive" } },
+          { user: { name: { contains: searchQuery, mode: "insensitive" } } },
+          { user: { email: { contains: searchQuery, mode: "insensitive" } } },
         ]
       }
 
@@ -69,8 +75,16 @@ export default async function handler(
 
       res.status(200).json({ farmers })
     } catch (error) {
-      // console.error("Admin farmers fetch error:", error)
-      res.status(500).json({ message: "Internal server error" })
+      logError("Admin farmers fetch error", error instanceof Error ? error : new Error(String(error)), {
+        method: req.method,
+        userId: session.user.id,
+      })
+      return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(
+        createErrorResponse(
+          ApiErrorCode.DATABASE_ERROR,
+          "Failed to fetch farmers"
+        )
+      )
     }
   } else {
     res.status(405).json({ message: "Method not allowed" })
