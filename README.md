@@ -1,214 +1,119 @@
-# AgroTrack+ 🌱
+# AgroTrack+ - Simple & Clean
 
-A comprehensive farm-to-table subscription platform connecting consumers directly with local farmers in Bengaluru, Karnataka. Built with Next.js 14, TypeScript, and modern web technologies.
+A streamlined farm-to-table platform with role-based authentication.
 
-## 🚀 Features
+## Features
 
-### Customer Portal
-- **Secure Authentication**: Role-based access control for customers, farmers, and admins
-- **Product Catalog**: Browse fresh produce with transparent "Trust Statement" pricing
-- **Subscription Management**: Create, modify, pause, and cancel weekly produce subscriptions
-- **Order Tracking**: Complete order history with real-time status updates
-- **Delivery Scheduling**: Zone-based delivery with flexible time slots
+✅ **Authentication System**
+- Sign In / Sign Up
+- Role-based access (Admin, Farmer, Customer)
+- Protected routes
+- Session management
 
-### Farmer Portal
-- **Profile Management**: Farm details, certifications, and document uploads
-- **Product Listings**: Manage product catalog with pricing and availability
-- **Delivery Requirements**: View upcoming delivery obligations and requirements
-- **Quality Insights**: Performance analytics with QC results and recommendations
-- **Revenue Tracking**: Earnings overview and payment history
+✅ **Public Pages**
+- Homepage
+- Products listing
+- About page
+- Contact page
 
-### Admin Dashboard
-- **Farmer Management**: Approve and manage farmer partnerships
-- **Procurement System**: Generate daily procurement lists from subscription orders
-- **Delivery Zones**: Configure delivery areas and time slots
-- **Quality Control**: Monitor QC results and maintain quality standards
-- **Analytics**: Platform metrics and operational insights
+✅ **Role-Based Dashboards**
+- Admin Dashboard
+- Farmer Dashboard
+- Customer Dashboard
 
-## 🛠️ Tech Stack
+## Quick Start
 
-### Frontend
-- **Next.js 14** with App Router and TypeScript
-- **Tailwind CSS** for styling with Modern Organic design system
-- **Radix UI** components for accessible, customizable UI
-- **React Hook Form** with Zod validation
-- **Recharts** for data visualization
-- **Framer Motion** for animations
+```bash
+# Install dependencies
+npm install
 
-### Backend
-- **Next.js API Routes** for serverless backend
-- **Prisma ORM** with PostgreSQL database
-- **NextAuth.js** for authentication and session management
-- **Zod** for runtime type validation
+# Seed demo users
+npm run db:seed-users
 
-### Database
-- **PostgreSQL** with comprehensive schema for all entities
-- **Prisma** for type-safe database operations
-- **Role-based data access** with proper relationships
-
-## 🏗️ Architecture
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Customer      │    │     Farmer      │    │     Admin       │
-│   Portal        │    │     Portal      │    │   Dashboard     │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         └───────────────────────┼───────────────────────┘
-                                 │
-         ┌─────────────────────────────────────────────────┐
-         │              Next.js API Layer                  │
-         │  ┌─────────────┐  ┌─────────────┐  ┌─────────┐ │
-         │  │    Auth     │  │  Business   │  │   Data  │ │
-         │  │ Middleware  │  │    Logic    │  │ Access  │ │
-         │  └─────────────┘  └─────────────┘  └─────────┘ │
-         └─────────────────────────────────────────────────┘
-                                 │
-         ┌─────────────────────────────────────────────────┐
-         │              PostgreSQL Database                │
-         │  Users | Farmers | Products | Subscriptions    │
-         │  Orders | QC Results | Delivery Routes         │
-         └─────────────────────────────────────────────────┘
+# Start development server
+npm run dev
 ```
 
-## 🎨 Design System
+Visit: **http://localhost:3000**
 
-### Modern Organic Theme
-- **Primary Colors**: Deep forest green (#2D5016), warm earth brown (#8B4513)
-- **Accent Color**: Fresh carrot orange (#FF6B35)
-- **Typography**: Inter (UI), Lora (storytelling)
-- **Visual Elements**: Soft rounded corners, organic shadows, agricultural imagery
+## Demo Accounts
 
-## 📦 Installation
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@agrotrack.com | any |
+| Farmer | farmer@agrotrack.com | any |
+| Customer | customer@agrotrack.com | any |
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd agrotrack-plus
-   ```
+## Project Structure
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+```
+pages/
+├── index.tsx           # Homepage
+├── products.tsx        # Products page
+├── about.tsx          # About page
+├── contact.tsx        # Contact page
+├── dashboard.tsx      # Role-based dashboard router
+├── auth/
+│   ├── signin.tsx     # Sign in page
+│   └── signup.tsx     # Sign up page
+├── admin/
+│   └── farmers.tsx    # Admin: Manage farmers
+└── api/
+    └── auth/          # Authentication APIs
 
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env.local
-   ```
-   
-   Update `.env.local` with your configuration:
-   ```env
-   DATABASE_URL="postgresql://username:password@localhost:5432/agrotrack"
-   NEXTAUTH_SECRET="your-secret-key"
-   NEXTAUTH_URL="http://localhost:3000"
-   ```
+components/
+├── dashboards/        # Role-specific dashboards
+└── layout/           # Layout components
 
-4. **Set up the database**
-   ```bash
-   # Generate Prisma client
-   npx prisma generate
-   
-   # Push schema to database
-   npx prisma db push
-   
-   # Seed with sample data
-   npm run db:seed
-   ```
+lib/
+├── auth.ts           # NextAuth configuration
+├── prisma.ts         # Database client
+└── utils.ts          # Utility functions
+```
 
-5. **Start the development server**
-   ```bash
-   npm run dev
-   ```
+## Tech Stack
 
-## 🗄️ Database Schema
+- **Framework**: Next.js 14
+- **Authentication**: Stack Auth (replacing NextAuth.js)
+- **Database**: PostgreSQL + Prisma
+- **Styling**: Tailwind CSS
+- **Language**: TypeScript
 
-### Core Entities
-- **Users**: Authentication and role management
-- **Customers**: Customer profiles and addresses
-- **Farmers**: Farm details and certifications
-- **Products**: Product catalog with pricing
-- **Subscriptions**: Customer subscription management
-- **Orders**: Order processing and fulfillment
-- **QC Results**: Quality control tracking
-- **Delivery Routes**: Logistics and route planning
+## Environment Variables
 
-## 🔐 Authentication & Authorization
+⚠️ **IMPORTANT**: Never commit your `.env` file to version control!
 
-### User Roles
-- **CUSTOMER**: Browse products, manage subscriptions, track orders
-- **FARMER**: Manage products, view delivery requirements, track performance
-- **OPERATIONS**: Manage procurement, quality control, logistics
-- **ADMIN**: Full system access, farmer approval, configuration
+1. Copy the example environment file:
+```bash
+cp .env.example .env
+```
 
-### Security Features
-- JWT-based session management
-- Role-based access control (RBAC)
-- Input validation and sanitization
-- Secure password handling
-- Protected API routes
+2. Update `.env` with your actual credentials:
 
-## 📱 Key Features Implemented
+```env
+# Database
+DATABASE_URL="postgresql://username:password@host:port/database"
 
-### ✅ Completed Features
-1. **Project Foundation** - Next.js 14 setup with TypeScript and Tailwind
-2. **Database Schema** - Comprehensive Prisma schema with all entities
-3. **Authentication System** - NextAuth.js with role-based access
-4. **Product Catalog** - Browse products with trust statement pricing
-5. **Subscription Management** - Create and manage weekly subscriptions
-6. **Delivery Zones** - Geographic delivery areas with time slots
-7. **Order Management** - Complete order lifecycle with status tracking
-8. **Farmer Portal** - Dashboard, products, deliveries, and insights
-9. **Admin Systems** - Farmer management and procurement tools
-10. **Notifications** - Email and in-app notification system
-11. **Error Handling** - Comprehensive error boundaries and user feedback
+# Stack Auth Configuration
+NEXT_PUBLIC_STACK_PROJECT_ID="your-stack-project-id"
+NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY="your-stack-publishable-key"
+STACK_SECRET_SERVER_KEY="your-stack-secret-key"
 
-### 🚧 Remaining Tasks
-- Quality Control tablet interface
-- Route planning and logistics optimization
-- File upload and storage system
-- Advanced reporting and analytics
-- Search and filtering enhancements
-- Performance optimization and caching
-- Security hardening
-- Mobile responsiveness improvements
-- Admin configuration system
-- Integration testing
+# Other optional configurations...
+```
 
-## 🚀 Deployment
+3. See `.env.example` for a complete list of available environment variables.
 
-### Environment Setup
-1. Set up PostgreSQL database
-2. Configure environment variables
-3. Run database migrations
-4. Deploy to Vercel or similar platform
+## Clean & Simple
 
-### Production Considerations
-- Database connection pooling
-- Redis caching for performance
-- CDN for static assets
-- Error monitoring (Sentry)
-- Analytics tracking
-- SSL/TLS encryption
+This is a minimal, production-ready version with:
+- ✅ Zero unnecessary files
+- ✅ Clean code structure
+- ✅ Essential features only
+- ✅ No bloat
+- ✅ Easy to understand
+- ✅ Ready to extend
 
-## 🤝 Contributing
+## License
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 🙏 Acknowledgments
-
-- Local farmers in Bengaluru for inspiration
-- Open source community for amazing tools
-- Sustainable agriculture advocates
-
----
-
-**AgroTrack+** - Connecting communities through fresh, local produce 🌱
+MIT

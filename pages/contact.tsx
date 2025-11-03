@@ -1,90 +1,95 @@
+import Head from 'next/head'
+import Link from 'next/link'
 
-import { useState } from 'react';
-import axios from 'axios';
-
-const ContactPage = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [subject, setSubject] = useState('');
-  const [message, setMessage] = useState('');
-  const [status, setStatus] = useState({ type: '', message: '' });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setStatus({ type: '', message: '' });
-
-    try {
-      const response = await axios.post('/api/contact', {
-        name,
-        email,
-        subject,
-        message,
-      });
-
-      setStatus({ type: 'success', message: response.data.message });
-      setName('');
-      setEmail('');
-      setSubject('');
-      setMessage('');
-
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.error || 'An unexpected error occurred.';
-      setStatus({ type: 'error', message: errorMessage });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
+export default function Contact() {
   return (
-    <div style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
-      <h1>Contact Us</h1>
-      <p>Have a question or feedback? Fill out the form below to get in touch with our team.</p>
-      
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <input 
-          type="text" 
-          placeholder="Your Name" 
-          value={name} 
-          onChange={e => setName(e.target.value)} 
-          required 
-        />
-        <input 
-          type="email" 
-          placeholder="Your Email" 
-          value={email} 
-          onChange={e => setEmail(e.target.value)} 
-          required 
-        />
-        <input 
-          type="text" 
-          placeholder="Subject" 
-          value={subject} 
-          onChange={e => setSubject(e.target.value)} 
-          required 
-        />
-        <textarea 
-          placeholder="Your Message" 
-          value={message} 
-          onChange={e => setMessage(e.target.value)} 
-          rows={6} 
-          required 
-        />
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Sending...' : 'Send Message'}
-        </button>
-      </form>
+    <>
+      <Head>
+        <title>Contact - AgroTrack+</title>
+      </Head>
 
-      {status.message && (
-        <div style={{ marginTop: '1.5rem', padding: '1rem', borderRadius: '8px', background: status.type === 'success' ? '#d4edda' : '#f8d7da' }}>
-          <p style={{ color: status.type === 'success' ? '#155724' : '#721c24', margin: 0 }}>
-            {status.message}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-};
+      <div className="min-h-screen bg-gray-50">
+        <header className="bg-white shadow-sm">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <Link href="/" className="text-2xl font-bold text-green-600">
+                AgroTrack+
+              </Link>
+              <nav className="flex gap-6">
+                <Link href="/" className="text-gray-700 hover:text-green-600">
+                  Home
+                </Link>
+                <Link href="/products" className="text-gray-700 hover:text-green-600">
+                  Products
+                </Link>
+                <Link href="/about" className="text-gray-700 hover:text-green-600">
+                  About
+                </Link>
+              </nav>
+            </div>
+          </div>
+        </header>
 
-export default ContactPage;
+        <main className="container mx-auto px-4 py-12">
+          <div className="max-w-2xl mx-auto">
+            <h1 className="text-4xl font-bold text-gray-900 mb-8">Contact Us</h1>
+            
+            <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+              <h2 className="text-2xl font-bold mb-4">Get in Touch</h2>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-gray-600">📧 Email:</p>
+                  <p className="text-lg font-semibold">contact@agrotrackplus.com</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">📞 Phone:</p>
+                  <p className="text-lg font-semibold">+91 80 1234 5678</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">📍 Address:</p>
+                  <p className="text-lg font-semibold">Bangalore, Karnataka, India</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-lg p-8">
+              <h2 className="text-2xl font-bold mb-6">Send us a Message</h2>
+              <form className="space-y-4">
+                <div>
+                  <label className="block text-gray-700 mb-2">Name</label>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                    placeholder="Your name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 mb-2">Email</label>
+                  <input
+                    type="email"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                    placeholder="your@email.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 mb-2">Message</label>
+                  <textarea
+                    rows={5}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                    placeholder="Your message..."
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                >
+                  Send Message
+                </button>
+              </form>
+            </div>
+          </div>
+        </main>
+      </div>
+    </>
+  )
+}

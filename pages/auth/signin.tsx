@@ -1,128 +1,121 @@
-import { useState } from "react"
-import { signIn, getSession } from "next-auth/react"
-import { useRouter } from "next/router"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState } from 'react'
+import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/router'
+import Head from 'next/head'
+import Link from 'next/link'
 
 export default function SignIn() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
   const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    setError('')
+    setLoading(true)
 
     try {
-      const result = await signIn("credentials", {
+      const result = await signIn('credentials', {
         email,
         password,
         redirect: false,
       })
 
       if (result?.error) {
-        setError("Invalid credentials")
+        setError(result.error)
       } else {
-        const session = await getSession()
-        if (session?.user?.role === "CUSTOMER") {
-          router.push("/dashboard")
-        } else if (session?.user?.role === "FARMER") {
-          router.push("/farmer/dashboard")
-        } else if (session?.user?.role === "ADMIN" || session?.user?.role === "OPERATIONS") {
-          router.push("/admin/dashboard")
-        } else {
-          router.push("/")
-        }
+        router.push('/dashboard')
       }
-    } catch (error) {
-      setError("Something went wrong")
+    } catch (err) {
+      setError('An error occurred. Please try again.')
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }
 
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true);
-    await signIn("google", { callbackUrl: "/dashboard" });
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Sign in to AgroTrack+</CardTitle>
-          <CardDescription className="text-center">
-            Enter your email and password to access your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            {error && (
-              <div className="text-red-600 text-sm text-center">{error}</div>
-            )}
-            <div className="flex items-center justify-between">
-              <Link href="/auth/forgot-password" className="text-sm text-green-600 hover:text-green-500">
-                Forgot password?
-              </Link>
-            </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign In"}
-            </Button>
-          </form>
-          <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Or continue with
-              </span>
-            </div>
-          </div>
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={handleGoogleSignIn}
-            disabled={isLoading}
-          >
-            Sign in with Google
-          </Button>
-          <div className="mt-6 text-center text-sm">
-            <span className="text-gray-600">Don't have an account? </span>
-            <Link href="/auth/signup" className="text-green-600 hover:text-green-500">
-              Sign up
+    <>
+      <Head>
+        <title>Sign In - AgroTrack+</title>
+      </Head>
+
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-white flex items-center justify-center px-4">
+        <div className="max-w-md w-full">
+          <div className="text-center mb-8">
+            <Link href="/" className="text-3xl font-bold text-green-600">
+              AgroTrack+
             </Link>
+            <h2 className="mt-6 text-3xl font-bold text-gray-900">Sign in to your account</h2>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                  placeholder="your@email.com"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                  placeholder="••••••••"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50"
+              >
+                {loading ? 'Signing in...' : 'Sign In'}
+              </button>
+            </form>
+
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600">
+                Don't have an account?{' '}
+                <Link href="/auth/signup" className="text-green-600 hover:text-green-700 font-semibold">
+                  Sign up
+                </Link>
+              </p>
+            </div>
+
+            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <p className="text-sm font-semibold text-blue-900 mb-2">Demo Accounts:</p>
+              <div className="text-xs text-blue-800 space-y-1">
+                <p>Admin: admin@agrotrack.com</p>
+                <p>Farmer: farmer@agrotrack.com</p>
+                <p>Customer: customer@agrotrack.com</p>
+                <p className="text-blue-600 mt-2">Password: any password works</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
