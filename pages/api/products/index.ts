@@ -3,7 +3,11 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { productSchema } from "@/lib/validations" // Assuming you have a product validation schema
+import { productSchema } from "@/lib/validations"
+import { ProductWhereInput, HTTP_STATUS, ApiErrorCode, createErrorResponse, createSuccessResponse } from "@/types/api"
+import { logError, logInfo } from "@/lib/logger"
+import { validatePagination, sanitizeSearchQuery } from "@/lib/query-validation"
+import { Prisma } from "@prisma/client"
 
 export default async function handler(
   req: NextApiRequest,
@@ -26,16 +30,22 @@ export default async function handler(
 
       const categories = req.query["categories[]"]
       const categoriesArray = categories ? (Array.isArray(categories) ? categories : [categories]) : []
-      
+
       const farmerIds = req.query["farmerIds[]"]
       const farmerIdsArray = farmerIds ? (Array.isArray(farmerIds) ? farmerIds : [farmerIds]) : []
 
-      const pageNum = parseInt(page as string)
-      const limitNum = parseInt(limit as string)
-      const skip = (pageNum - 1) * limitNum
+      // Validate pagination parameters
+      const { page: pageNum, limit: limitNum, skip } = validatePagination(page, limit, {
+        defaultPage: 1,
+        defaultLimit: 12,
+        maxLimit: 100,
+      })
 
-      // Build where clause
-      const where: any = {}
+      // Sanitize search query
+      const searchQuery = sanitizeSearchQuery(search)
+
+      // Build where clause with proper types
+      const where: Prisma.ProductWhereInput = {}
 
       if (availability === "in_stock") {
         where.isActive = true
@@ -56,10 +66,10 @@ export default async function handler(
         where.category = category
       }
 
-      if (search) {
+      if (searchQuery) {
         where.OR = [
-          { name: { contains: search as string, mode: "insensitive" } },
-          { description: { contains: search as string, mode: "insensitive" } },
+          { name: { contains: searchQuery, mode: "insensitive" } },
+          { description: { contains: searchQuery, mode: "insensitive" } },
         ]
       }
 
@@ -139,8 +149,16 @@ export default async function handler(
         },
       })
     } catch (error) {
-      // console.error("Products fetch error:", error)
-      res.status(500).json({ message: "Internal server error" })
+      logError("Products fetch error", error instanceof Error ? error : new Error(String(error)), {
+        method: req.method,
+        path: req.url,
+      })
+      return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(
+        createErrorResponse(
+          ApiErrorCode.DATABASE_ERROR,
+          "Failed to fetch products"
+        )
+      )
     }
   } else if (req.method === "POST") {
     const session = await getServerSession(req, res, authOptions)
@@ -168,12 +186,28 @@ export default async function handler(
       })
 
       res.status(201).json(newProduct)
-    } catch (error: any) {
-      // console.error("Product creation error:", error)
-      if (error.name === "ZodError") {
-        return res.status(400).json({ message: "Validation error", errors: error.errors })
+    } catch (error) {
+      logError("Product creation error", error instanceof Error ? error : new Error(String(error)), {
+        method: req.method,
+        farmerId: session?.user?.id,
+      })
+
+      if (error instanceof Error && error.name === "ZodError") {
+        return res.status(HTTP_STATUS.BAD_REQUEST).json(
+          createErrorResponse(
+            ApiErrorCode.VALIDATION_ERROR,
+            "Invalid product data",
+            (error as any).errors
+          )
+        )
       }
-      res.status(500).json({ message: "Internal server error" })
+
+      return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(
+        createErrorResponse(
+          ApiErrorCode.INTERNAL_SERVER_ERROR,
+          "Failed to create product"
+        )
+      )
     }
   } else {
     res.setHeader("Allow", ["GET", "POST"])

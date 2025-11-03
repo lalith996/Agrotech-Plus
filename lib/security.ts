@@ -31,15 +31,9 @@ export class InputSanitizer {
       .trim()
   }
 
-  // Sanitize SQL input to prevent injection
-  static sanitizeSql(input: string): string {
-    return input
-      .replace(/['";\\]/g, '') // Remove dangerous SQL characters
-      .replace(/--/g, '') // Remove SQL comments
-      .replace(/\/\*/g, '') // Remove SQL block comments start
-      .replace(/\*\//g, '') // Remove SQL block comments end
-      .trim()
-  }
+  // Note: SQL sanitization is NOT needed when using Prisma ORM
+  // Prisma uses parameterized queries which prevent SQL injection automatically
+  // This method has been removed - use Prisma queries directly
 
   // Sanitize file names
   static sanitizeFileName(fileName: string): string {

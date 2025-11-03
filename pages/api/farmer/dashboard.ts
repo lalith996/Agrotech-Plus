@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { UserRole } from "@prisma/client"
+import { getFarmerCommissionRate } from "@/lib/config"
 
 export default async function handler(
   req: NextApiRequest,
@@ -170,14 +171,17 @@ export default async function handler(
         ? qcScores.reduce((sum, score) => sum + score, 0) / qcScores.length 
         : 0
 
-      // Calculate monthly revenue (farmer gets 60% of order value)
+      // Get farmer commission rate from configuration
+      const commissionRate = await getFarmerCommissionRate()
+
+      // Calculate monthly revenue using configured commission rate
       const monthlyRevenue = monthlyOrders.reduce((total, item) => {
-        return total + (item.price * item.quantity * 0.6) // 60% to farmer
+        return total + (item.price * item.quantity * commissionRate)
       }, 0)
 
       // Calculate total revenue (all time)
       const totalRevenue = allOrderItems.reduce((total, item) => {
-        return total + (item.price * item.quantity * 0.6) // 60% to farmer
+        return total + (item.price * item.quantity * commissionRate)
       }, 0)
 
       // Count active orders
@@ -192,26 +196,31 @@ export default async function handler(
         }
       })
 
-      // Calculate product performance
-      const productPerformance = await Promise.all(
-        products.map(async (product) => {
-          const sales = await prisma.orderItem.aggregate({
-            where: {
-              productId: product.id,
-              order: {
-                status: { in: ["DELIVERED", "CONFIRMED", "PICKED", "ORDER_IN_TRANSIT"] }
-              }
-            },
-            _sum: {
-              quantity: true
-            }
-          })
-          return {
-            name: product.name,
-            sales: sales._sum.quantity || 0
+      // Calculate product performance efficiently (fixed N+1 query)
+      const productIds = products.map(p => p.id)
+      const salesByProduct = await prisma.orderItem.groupBy({
+        by: ['productId'],
+        where: {
+          productId: { in: productIds },
+          order: {
+            status: { in: ["DELIVERED", "CONFIRMED", "PICKED", "ORDER_IN_TRANSIT"] }
           }
-        })
+        },
+        _sum: {
+          quantity: true
+        }
+      })
+
+      // Create lookup map for O(1) access
+      const salesMap = new Map(
+        salesByProduct.map(item => [item.productId, item._sum.quantity || 0])
       )
+
+      // Map products to performance data
+      const productPerformance = products.map(product => ({
+        name: product.name,
+        sales: salesMap.get(product.id) || 0
+      }))
 
       const stats = {
         farmName: farmer.farmName,
