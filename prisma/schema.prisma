@@ -1,21 +1,631 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres", "postgresqlExtensions"]
+  binaryTargets   = ["native", "darwin-arm64"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pg_trgm]
 }
 
-enum UserRole {
-  CUSTOMER
-  FARMER
-  OPERATIONS
-  DRIVER
-  ADMIN
+model accounts {
+  id                String  @id
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  @@unique([provider, providerAccountId])
+}
+
+model addresses {
+  id         String    @id
+  customerId String
+  name       String
+  street     String
+  city       String
+  state      String
+  zipCode    String
+  isDefault  Boolean   @default(false)
+  latitude   Float?
+  longitude  Float?
+  userId     String?
+  customers  customers @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  users      users?    @relation(fields: [userId], references: [id])
+  orders     orders[]
+}
+
+model bank_details {
+  id                String    @id
+  farmerId          String    @unique
+  accountHolderName String
+  accountNumber     String
+  ifscCode          String
+  bankName          String
+  branchName        String
+  accountType       String    @default("savings")
+  isVerified        Boolean   @default(false)
+  verifiedAt        DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime
+  farmers           farmers   @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+
+  @@index([farmerId])
+}
+
+model cart_items {
+  id         String    @id
+  customerId String
+  productId  String
+  quantity   Float
+  notes      String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime
+  customers  customers @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  products   products  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, productId])
+  @@index([customerId])
+}
+
+model certifications {
+  id            String    @id
+  farmerId      String
+  name          String
+  issuingBody   String
+  issueDate     DateTime
+  expiryDate    DateTime?
+  fileId        String    @unique
+  extractedText String?
+  isValidated   Boolean   @default(false)
+  validatedBy   String?
+  validatedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime
+  farmers       farmers   @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  files         files     @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@index([farmerId])
+}
+
+model customers {
+  id              String            @id
+  userId          String            @unique
+  phone           String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  addresses       addresses[]
+  cart_items      cart_items[]
+  users           users             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders          orders[]
+  payments        payments[]
+  payment_methods payment_methods[]
+  reviews         reviews[]
+  subscriptions   subscriptions[]
+  wishlist_items  wishlist_items[]
+}
+
+model daily_metrics {
+  id                  String   @id
+  date                DateTime @unique @db.Date
+  totalOrders         Int      @default(0)
+  totalRevenue        Float    @default(0)
+  newCustomers        Int      @default(0)
+  activeCustomers     Int      @default(0)
+  averageOrderValue   Float    @default(0)
+  deliverySuccessRate Float    @default(0)
+  qcPassRate          Float    @default(0)
+  metadata            Json?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime
+
+  @@index([date])
+}
+
+model delivery_routes {
+  id                  String               @id
+  slotId              String
+  driverId            String?
+  date                DateTime
+  status              String               @default("planned")
+  optimizedOrder      String[]
+  estimatedDuration   Int?
+  actualDuration      Int?
+  notes               String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime
+  delivery_slots      delivery_slots       @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  route_optimizations route_optimizations?
+  route_orders        route_orders[]
+  orders              orders[]             @relation("RouteOrders")
+}
+
+model delivery_slots {
+  id              String            @id
+  zoneId          String
+  dayOfWeek       Int
+  startTime       String
+  endTime         String
+  maxOrders       Int               @default(50)
+  isActive        Boolean           @default(true)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  delivery_routes delivery_routes[]
+  delivery_zones  delivery_zones    @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+
+  @@unique([zoneId, dayOfWeek, startTime])
+}
+
+model delivery_zones {
+  id             String           @id
+  name           String           @unique
+  description    String?
+  isActive       Boolean          @default(true)
+  boundaries     Json?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime
+  delivery_slots delivery_slots[]
+}
+
+model farmer_deliveries {
+  id           String       @id
+  farmerId     String
+  deliveryDate DateTime
+  status       String       @default("scheduled")
+  notes        String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime
+  farmers      farmers      @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  qc_results   qc_results[]
+}
+
+model farmers {
+  id                String              @id
+  userId            String              @unique
+  farmName          String
+  location          String
+  description       String?
+  phone             String?
+  isApproved        Boolean             @default(false)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  bank_details      bank_details?
+  certifications    certifications[]
+  farmer_deliveries farmer_deliveries[]
+  users             users               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lots              lots[]
+  products          products[]
+  qc_results        qc_results[]
+}
+
+model files {
+  id             String          @id
+  originalName   String
+  mimeType       String
+  size           Int
+  s3Key          String          @unique
+  url            String          @unique
+  optimizedUrl   String?
+  thumbnailUrl   String?
+  uploadedBy     String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime
+  certifications certifications?
+  users          users           @relation(fields: [uploadedBy], references: [id])
+
+  @@index([uploadedBy])
+}
+
+model lots {
+  id                  String    @id
+  lotNumber           String    @unique
+  farmerId            String
+  productName         String
+  plantedDate         DateTime
+  expectedHarvestDate DateTime
+  actualHarvestDate   DateTime?
+  quantity            Float
+  unit                String
+  status              LotStatus @default(PLANTED)
+  certifications      String[]
+  notes               String?
+  metadata            Json?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime
+  farmers             farmers   @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+
+  @@index([expectedHarvestDate])
+  @@index([farmerId, status])
+  @@index([lotNumber])
+  @@index([plantedDate])
+}
+
+model notification_logs {
+  id        String    @id
+  userId    String
+  type      String
+  channel   String
+  title     String
+  message   String
+  data      Json?
+  sent      Boolean   @default(false)
+  sentAt    DateTime?
+  error     String?
+  createdAt DateTime  @default(now())
+  users     users     @relation(fields: [userId], references: [id])
+
+  @@index([sent, createdAt])
+  @@index([userId, type])
+}
+
+model order_items {
+  id        String   @id
+  orderId   String
+  productId String
+  quantity  Float
+  price     Float
+  orders    orders   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  products  products @relation(fields: [productId], references: [id])
+}
+
+model orders {
+  id              String            @id
+  customerId      String
+  subscriptionId  String?
+  addressId       String
+  deliverySlot    String
+  status          OrderStatus       @default(PENDING)
+  totalAmount     Float
+  deliveryDate    DateTime
+  specialNotes    String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  order_items     order_items[]
+  addresses       addresses         @relation(fields: [addressId], references: [id])
+  customers       customers         @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  subscriptions   subscriptions?    @relation(fields: [subscriptionId], references: [id])
+  payments        payments[]
+  route_orders    route_orders[]
+  delivery_routes delivery_routes[] @relation("RouteOrders")
+}
+
+model payments {
+  id              String        @id
+  orderId         String
+  customerId      String
+  amount          Float
+  paymentMethod   PaymentMethod
+  status          PaymentStatus @default(PENDING)
+  transactionId   String?       @unique
+  gatewayResponse Json?
+  failureReason   String?
+  paidAt          DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime
+  customers       customers     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  orders          orders        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([customerId, status])
+  @@index([orderId])
+  @@index([transactionId])
+}
+
+model payment_methods {
+  id             String        @id
+  customerId     String
+  type           PaymentMethod
+  provider       String?
+  last4          String?
+  expiryMonth    String?
+  expiryYear     String?
+  cardholderName String?
+  upiId          String?
+  bankName       String?
+  isDefault      Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  customers      customers     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([customerId, isDefault])
+}
+
+model performance_metrics {
+  id        String   @id
+  endpoint  String
+  method    String
+  duration  Int
+  status    Int
+  userId    String?
+  userAgent String?
+  ip        String?
+  createdAt DateTime @default(now())
+  users     users?   @relation(fields: [userId], references: [id])
+
+  @@index([createdAt])
+  @@index([endpoint, method])
+}
+
+model products {
+  id                 String               @id
+  name               String
+  category           String
+  description        String?
+  images             String[]
+  basePrice          Float
+  unit               String
+  isActive           Boolean              @default(true)
+  farmerId           String
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  cart_items         cart_items[]
+  order_items        order_items[]
+  farmers            farmers              @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  qc_results         qc_results[]
+  reviews            reviews[]
+  subscription_items subscription_items[]
+  wishlist_items     wishlist_items[]
+}
+
+model qc_offline_entries {
+  id               String    @id
+  deviceId         String
+  farmerDeliveryId String
+  productId        String
+  farmerId         String
+  expectedQuantity Float
+  acceptedQuantity Float
+  rejectedQuantity Float
+  rejectionReasons String[]
+  photos           String[]
+  audioNotes       String[]
+  inspectorId      String
+  notes            String?
+  geolocation      Json?
+  signature        String?
+  synced           Boolean   @default(false)
+  syncedAt         DateTime?
+  syncError        String?
+  timestamp        DateTime  @default(now())
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime
+
+  @@index([deviceId, synced])
+  @@index([farmerDeliveryId])
+}
+
+model qc_results {
+  id                String            @id
+  farmerDeliveryId  String
+  productId         String
+  farmerId          String
+  expectedQuantity  Float
+  acceptedQuantity  Float
+  rejectedQuantity  Float
+  rejectionReasons  String[]
+  photos            String[]
+  inspectorId       String
+  notes             String?
+  timestamp         DateTime          @default(now())
+  farmer_deliveries farmer_deliveries @relation(fields: [farmerDeliveryId], references: [id], onDelete: Cascade)
+  farmers           farmers           @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  products          products          @relation(fields: [productId], references: [id])
+}
+
+model reviews {
+  id           String    @id
+  customerId   String
+  productId    String
+  orderId      String?
+  rating       Int
+  title        String?
+  comment      String?
+  images       String[]
+  isVerified   Boolean   @default(false)
+  isVisible    Boolean   @default(true)
+  helpfulCount Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime
+  customers    customers @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  products     products  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([productId, isVisible])
+  @@index([rating])
+}
+
+model route_optimizations {
+  id                String          @id
+  routeId           String          @unique
+  algorithm         String
+  parameters        Json
+  originalDistance  Float
+  optimizedDistance Float
+  originalDuration  Int
+  optimizedDuration Int
+  savings           Float
+  createdAt         DateTime        @default(now())
+  delivery_routes   delivery_routes @relation(fields: [routeId], references: [id], onDelete: Cascade)
+}
+
+model route_orders {
+  id              String          @id
+  routeId         String
+  orderId         String
+  sequence        Int
+  orders          orders          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  delivery_routes delivery_routes @relation(fields: [routeId], references: [id], onDelete: Cascade)
+
+  @@unique([routeId, orderId])
+}
+
+model search_queries {
+  id        String   @id
+  query     String
+  userId    String?
+  filters   Json?
+  results   Int
+  clicked   Boolean  @default(false)
+  clickedId String?
+  createdAt DateTime @default(now())
+  users     users?   @relation(fields: [userId], references: [id])
+
+  @@index([query])
+  @@index([userId])
+}
+
+model sessions {
+  id           String   @id
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+}
+
+model subscription_items {
+  id             String        @id
+  subscriptionId String
+  productId      String
+  quantity       Float
+  frequency      String        @default("weekly")
+  products       products      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  subscriptions  subscriptions @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@unique([subscriptionId, productId])
+}
+
+model subscriptions {
+  id                 String               @id
+  customerId         String
+  deliveryZone       String
+  deliveryDay        String
+  status             SubscriptionStatus   @default(ACTIVE)
+  startDate          DateTime
+  pausedUntil        DateTime?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  orders             orders[]
+  subscription_items subscription_items[]
+  customers          customers            @relation(fields: [customerId], references: [id], onDelete: Cascade)
+}
+
+model system_configs {
+  id          String   @id
+  key         String   @unique
+  value       Json
+  description String?
+  category    String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+
+  @@index([category])
+}
+
+model user_preferences {
+  id                   String   @id
+  userId               String   @unique
+  favoriteCategories   String[]
+  preferredFarms       String[]
+  dietaryRestrictions  String[]
+  maxDeliveryDistance  Float?
+  priceRange           Json?
+  notificationSettings Json?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime
+  users                users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model users {
+  id                  String                @id
+  stackUserId         String?               @unique
+  email               String                @unique
+  emailVerified       DateTime?
+  name                String?
+  image               String?
+  phone               String?               @unique
+  phoneVerified       DateTime?
+  role                UserRole              @default(CUSTOMER)
+  isActive            Boolean               @default(true)
+  lastLoginAt         DateTime?
+  metadata            Json?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime
+  addresses           addresses[]
+  customers           customers?
+  farmers             farmers?
+  files               files[]
+  notification_logs   notification_logs[]
+  performance_metrics performance_metrics[]
+  search_queries      search_queries[]
+  user_preferences    user_preferences?
+
+  @@index([createdAt])
+  @@index([email])
+  @@index([phone])
+  @@index([role, isActive])
+  @@index([stackUserId])
+}
+
+model verification_tokens {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model wishlist_items {
+  id         String    @id
+  customerId String
+  productId  String
+  notes      String?
+  createdAt  DateTime  @default(now())
+  customers  customers @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  products   products  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, productId])
+  @@index([customerId])
+}
+
+enum DeliveryStatus {
+  SCHEDULED
+  PICKED_UP
+  DELIVERY_IN_TRANSIT
+  DELIVERED
+  FAILED
+}
+
+enum LotStatus {
+  PLANTED
+  GROWING
+  HARVESTED
+  PACKAGED
+  SHIPPED
+}
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+  PUSH
+  IN_APP
+}
+
+enum NotificationType {
+  ORDER_UPDATE
+  DELIVERY_UPDATE
+  SUBSCRIPTION_UPDATE
+  QC_ALERT
+  PAYMENT_UPDATE
+  SYSTEM_ALERT
 }
 
 enum OrderStatus {
@@ -27,528 +637,39 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum PaymentMethod {
+  CARD
+  UPI
+  NET_BANKING
+  WALLET
+  COD
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum QCStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+}
+
 enum SubscriptionStatus {
   ACTIVE
   PAUSED
   CANCELLED
 }
 
-enum LotStatus {
-  PLANTED
-  GROWING
-  HARVESTED
-  PACKAGED
-  SHIPPED
-}
-
-enum DeliveryStatus {
-  SCHEDULED
-  PICKED_UP
-  DELIVERY_IN_TRANSIT
-  DELIVERED
-  FAILED
-}
-
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  role          UserRole  @default(CUSTOMER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  accounts           Account[]
-  sessions           Session[]
-  customer           Customer?
-  farmer             Farmer?
-  files              File[]
-  searchQueries      SearchQuery[]
-  performanceMetrics PerformanceMetric[]
-  preferences        UserPreference?
-  notifications      NotificationLog[]
-
-  @@map("users")
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-}
-
-model Customer {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  phone     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  addresses     Address[]
-  subscriptions Subscription[]
-  orders        Order[]
-
-  @@map("customers")
-}
-
-model Farmer {
-  id            String   @id @default(cuid())
-  userId        String   @unique
-  farmName      String
-  location      String
-  description   String?
-  phone         String?
-  isApproved    Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  products       Product[]
-  certifications Certification[]
-  deliveries     FarmerDelivery[]
-  qcResults      QCResult[]
-
-  @@map("farmers")
-}
-
-model Address {
-  id         String  @id @default(cuid())
-  customerId String
-  name       String
-  street     String
-  city       String
-  state      String
-  zipCode    String
-  isDefault  Boolean @default(false)
-  latitude   Float?
-  longitude  Float?
-
-  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  orders   Order[]
-
-  @@map("addresses")
-}
-
-model Product {
-  id          String   @id @default(cuid())
-  name        String
-  category    String
-  description String?
-  images      String[]
-  basePrice   Float
-  unit        String
-  isActive    Boolean  @default(true)
-  farmerId    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  farmer            Farmer             @relation(fields: [farmerId], references: [id], onDelete: Cascade)
-  subscriptionItems SubscriptionItem[]
-  orderItems        OrderItem[]
-  qcResults         QCResult[]
-
-  @@map("products")
-}
-
-
-
-model Subscription {
-  id           String             @id @default(cuid())
-  customerId   String
-  deliveryZone String
-  deliveryDay  String
-  status       SubscriptionStatus @default(ACTIVE)
-  startDate    DateTime
-  pausedUntil  DateTime?
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
-
-  customer Customer          @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  items    SubscriptionItem[]
-  orders   Order[]
-
-  @@map("subscriptions")
-}
-
-model SubscriptionItem {
-  id             String @id @default(cuid())
-  subscriptionId String
-  productId      String
-  quantity       Float
-  frequency      String @default("weekly")
-
-  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
-  product      Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@unique([subscriptionId, productId])
-  @@map("subscription_items")
-}
-
-model Order {
-  id               String      @id @default(cuid())
-  customerId       String
-  subscriptionId   String?
-  addressId        String
-  deliverySlot     String
-  status           OrderStatus @default(PENDING)
-  totalAmount      Float
-  deliveryDate     DateTime
-  specialNotes     String?
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
-
-  customer     Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  subscription Subscription? @relation(fields: [subscriptionId], references: [id])
-  address      Address       @relation(fields: [addressId], references: [id])
-  items        OrderItem[]
-  routes       DeliveryRoute[] @relation("RouteOrders")
-  routeOrders  RouteOrder[]
-
-  @@map("orders")
-}
-
-model OrderItem {
-  id       String @id @default(cuid())
-  orderId  String
-  productId String
-  quantity Float
-  price    Float
-
-  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id])
-
-  @@map("order_items")
-}
-
-model FarmerDelivery {
-  id           String   @id @default(cuid())
-  farmerId     String
-  deliveryDate DateTime
-  status       String   @default("scheduled")
-  notes        String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  farmer    Farmer     @relation(fields: [farmerId], references: [id], onDelete: Cascade)
-  qcResults QCResult[]
-
-  @@map("farmer_deliveries")
-}
-
-model QCResult {
-  id                 String   @id @default(cuid())
-  farmerDeliveryId   String
-  productId          String
-  farmerId           String
-  expectedQuantity   Float
-  acceptedQuantity   Float
-  rejectedQuantity   Float
-  rejectionReasons   String[]
-  photos             String[]
-  inspectorId        String
-  notes              String?
-  timestamp          DateTime @default(now())
-
-  farmerDelivery FarmerDelivery @relation(fields: [farmerDeliveryId], references: [id], onDelete: Cascade)
-  product        Product        @relation(fields: [productId], references: [id])
-  farmer         Farmer         @relation(fields: [farmerId], references: [id], onDelete: Cascade)
-
-  @@map("qc_results")
-}
-
-model DeliveryZone {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  description String?
-  isActive    Boolean  @default(true)
-  boundaries  Json? // GeoJSON polygon for zone boundaries
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  slots DeliverySlot[]
-
-  @@map("delivery_zones")
-}
-
-model DeliverySlot {
-  id           String      @id @default(cuid())
-  zoneId       String
-  dayOfWeek    Int // 0 = Sunday, 1 = Monday, etc.
-  startTime    String // "09:00"
-  endTime      String // "12:00"
-  maxOrders    Int         @default(50)
-  isActive     Boolean     @default(true)
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-
-  zone         DeliveryZone @relation(fields: [zoneId], references: [id], onDelete: Cascade)
-  routes       DeliveryRoute[]
-
-  @@unique([zoneId, dayOfWeek, startTime])
-  @@map("delivery_slots")
-}
-
-
-
-// Add route relationship to Order model
-model RouteOrder {
-  id        String @id @default(cuid())
-  routeId   String
-  orderId   String
-  sequence  Int
-  
-  route     DeliveryRoute @relation(fields: [routeId], references: [id], onDelete: Cascade)
-  order     Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
-  @@unique([routeId, orderId])
-  @@map("route_orders")
-}
-
-// Enhanced models for new functionality
-
-model File {
-  id            String   @id @default(cuid())
-  originalName  String
-  mimeType      String
-  size          Int
-  s3Key         String   @unique
-  url           String   @unique // The direct S3 URL
-  
-  // URLs for processed versions
-  optimizedUrl  String?
-  thumbnailUrl  String?
-  
-  // Relationships
-  uploadedBy    String
-  user          User     @relation(fields: [uploadedBy], references: [id])
-  
-  // This file might be a certification document
-  certification Certification?
-
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
-  @@index([uploadedBy])
-  @@map("files")
-}
-
-model SearchQuery {
-  id        String   @id @default(cuid())
-  query     String
-  userId    String?
-  filters   Json?    // Search filters applied
-  results   Int      // Number of results returned
-  clicked   Boolean  @default(false) // Whether user clicked on results
-  clickedId String?  // ID of clicked result
-  
-  user      User?    @relation(fields: [userId], references: [id])
-  
-  createdAt DateTime @default(now())
-  
-  @@index([query])
-  @@index([userId])
-  @@map("search_queries")
-}
-
-model PerformanceMetric {
-  id        String   @id @default(cuid())
-  endpoint  String
-  method    String
-  duration  Int      // Response time in milliseconds
-  status    Int      // HTTP status code
-  userId    String?
-  userAgent String?
-  ip        String?
-  
-  user      User?    @relation(fields: [userId], references: [id])
-  
-  createdAt DateTime @default(now())
-  
-  @@index([endpoint, method])
-  @@index([createdAt])
-  @@map("performance_metrics")
-}
-
-model UserPreference {
-  id               String   @id @default(cuid())
-  userId           String   @unique
-  favoriteCategories String[] // Product categories user frequently buys
-  preferredFarms   String[] // Farmer IDs user prefers
-  dietaryRestrictions String[] // 'organic', 'vegan', etc.
-  maxDeliveryDistance Float? // Maximum delivery distance in km
-  priceRange       Json?    // Min/max price preferences
-  notificationSettings Json? // Email, SMS, push notification preferences
-  
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  
-  @@map("user_preferences")
-}
-
-model QCOfflineEntry {
-  id               String   @id @default(cuid())
-  deviceId         String   // Unique device identifier
-  farmerDeliveryId String
-  productId        String
-  farmerId         String
-  expectedQuantity Float
-  acceptedQuantity Float
-  rejectedQuantity Float
-  rejectionReasons String[]
-  photos           String[] // Local file paths or base64 data
-  audioNotes       String[] // Audio recording file paths
-  inspectorId      String
-  notes            String?
-  geolocation      Json?    // Lat/lng coordinates
-  signature        String?  // Digital signature data
-  
-  // Sync status
-  synced           Boolean  @default(false)
-  syncedAt         DateTime?
-  syncError        String?
-  
-  timestamp        DateTime @default(now())
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  
-  @@index([deviceId, synced])
-  @@index([farmerDeliveryId])
-  @@map("qc_offline_entries")
-}
-
-model RouteOptimization {
-  id                String   @id @default(cuid())
-  routeId           String   @unique
-  algorithm         String   // 'genetic', 'ant_colony', 'nearest_neighbor'
-  parameters        Json     // Algorithm parameters used
-  originalDistance  Float    // Distance before optimization (km)
-  optimizedDistance Float    // Distance after optimization (km)
-  originalDuration  Int      // Duration before optimization (minutes)
-  optimizedDuration Int      // Duration after optimization (minutes)
-  savings           Float    // Percentage improvement
-  
-  route             DeliveryRoute @relation(fields: [routeId], references: [id], onDelete: Cascade)
-  
-  createdAt         DateTime @default(now())
-  
-  @@map("route_optimizations")
-}
-
-model NotificationLog {
-  id        String   @id @default(cuid())
-  userId    String
-  type      String   // 'email', 'sms', 'push', 'in_app'
-  channel   String   // 'order_update', 'qc_alert', 'delivery_reminder'
-  title     String
-  message   String
-  data      Json?    // Additional notification data
-  sent      Boolean  @default(false)
-  sentAt    DateTime?
-  error     String?
-  
-  user      User     @relation(fields: [userId], references: [id])
-  
-  createdAt DateTime @default(now())
-  
-  @@index([userId, type])
-  @@index([sent, createdAt])
-  @@map("notification_logs")
-}
-
-model SystemConfig {
-  id          String   @id @default(cuid())
-  key         String   @unique
-  value       Json
-  description String?
-  category    String   // 'cache', 'search', 'notifications', etc.
-  isActive    Boolean  @default(true)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  @@index([category])
-  @@map("system_configs")
-}
-
-// Update existing models to add file relationships
-model Certification {
-  id            String    @id @default(cuid())
-  farmerId      String
-  name          String    // e.g., "Organic Certification"
-  issuingBody   String    // Name of the organization that issued it
-  issueDate     DateTime
-  expiryDate    DateTime?
-
-  // File & OCR Data
-  fileId        String    @unique // A direct, non-optional link to the File model
-  extractedText String?   @db.Text // Store the full text from OCR
-  isValidated   Boolean   @default(false) // Has an admin confirmed the OCR data?
-  validatedBy   String?   // ID of the admin who validated it
-  validatedAt   DateTime?
-
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  farmer        Farmer    @relation(fields: [farmerId], references: [id], onDelete: Cascade)
-  file          File      @relation(fields: [fileId], references: [id], onDelete: Cascade)
-
-  @@index([farmerId])
-  @@map("certifications")
-}
-
-
-
-// Add route optimization relationship to DeliveryRoute
-model DeliveryRoute {
-  id               String        @id @default(cuid())
-  slotId           String
-  driverId         String?
-  date             DateTime
-  status           String        @default("planned") // planned, assigned, in_progress, completed
-  optimizedOrder   String[]      // Array of order IDs in optimized sequence
-  estimatedDuration Int?         // Minutes
-  actualDuration   Int?         // Minutes
-  notes            String?
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-
-  slot             DeliverySlot     @relation(fields: [slotId], references: [id], onDelete: Cascade)
-  orders           Order[]          @relation("RouteOrders")
-  routeOrders      RouteOrder[]
-  optimization     RouteOptimization?
-
-  @@map("delivery_routes")
+enum UserRole {
+  CUSTOMER
+  FARMER
+  OPERATIONS
+  DRIVER
+  ADMIN
 }

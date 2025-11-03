@@ -1,185 +1,145 @@
-import { useState } from "react"
-import { useRouter } from "next/router"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { UserRole } from "@prisma/client"
+import { useState } from 'react'
+import { useRouter } from 'next/router'
+import Head from 'next/head'
+import Link from 'next/link'
 
 export default function SignUp() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    role: "CUSTOMER" as UserRole,
-    farmName: "",
-    location: "",
-    phone: "",
-  })
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
   const router = useRouter()
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: 'CUSTOMER'
+  })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    setError('')
+    setLoading(true)
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
       })
 
-      const data = await response.json()
+      const data = await res.json()
 
-      if (!response.ok) {
-        throw new Error(data.message || "Registration failed")
+      if (!res.ok) {
+        setError(data.error || 'Registration failed')
+      } else {
+        router.push('/auth/signin?registered=true')
       }
-
-      // Redirect to sign in page with success message
-      router.push("/auth/signin?message=Registration successful. Please sign in.")
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "Something went wrong")
+    } catch (err) {
+      setError('An error occurred. Please try again.')
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Join AgroTrack+</CardTitle>
-          <CardDescription className="text-center">
-            Create your account to start your farm-to-table journey
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="role">I am a</Label>
-              <Select
-                value={formData.role}
-                onValueChange={(value) => handleInputChange("role", value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select your role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={UserRole.CUSTOMER}>Customer</SelectItem>
-                  <SelectItem value={UserRole.FARMER}>Farmer</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+    <>
+      <Head>
+        <title>Sign Up - AgroTrack+</title>
+      </Head>
 
-            <div className="space-y-2">
-              <Label htmlFor="name">
-                {formData.role === "FARMER" ? "Your Name" : "Full Name"}
-              </Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Enter your name"
-                value={formData.name}
-                onChange={(e) => handleInputChange("name", e.target.value)}
-                required
-              />
-            </div>
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-white flex items-center justify-center px-4 py-12">
+        <div className="max-w-md w-full">
+          <div className="text-center mb-8">
+            <Link href="/" className="text-3xl font-bold text-green-600">
+              AgroTrack+
+            </Link>
+            <h2 className="mt-6 text-3xl font-bold text-gray-900">Create your account</h2>
+          </div>
 
-            {formData.role === "FARMER" && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="farmName">Farm Name</Label>
-                  <Input
-                    id="farmName"
-                    type="text"
-                    placeholder="Enter your farm name"
-                    value={formData.farmName}
-                    onChange={(e) => handleInputChange("farmName", e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="location">Farm Location</Label>
-                  <Input
-                    id="location"
-                    type="text"
-                    placeholder="City, State"
-                    value={formData.location}
-                    onChange={(e) => handleInputChange("location", e.target.value)}
-                    required
-                  />
-                </div>
-              </>
-            )}
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number (Optional)</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="+91-XXXXXXXXXX"
-                value={formData.phone}
-                onChange={(e) => handleInputChange("phone", e.target.value)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Create a password"
-                value={formData.password}
-                onChange={(e) => handleInputChange("password", e.target.value)}
-                required
-              />
-            </div>
-
+          <div className="bg-white rounded-2xl shadow-xl p-8">
             {error && (
-              <div className="text-red-600 text-sm text-center">{error}</div>
-            )}
-
-            {formData.role === "FARMER" && (
-              <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-md">
-                <strong>Note:</strong> Farmer accounts require admin approval before you can start listing products.
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+                {error}
               </div>
             )}
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Creating Account..." : "Create Account"}
-            </Button>
-          </form>
-          <div className="mt-6 text-center text-sm">
-            <span className="text-gray-600">Already have an account? </span>
-            <Link href="/auth/signin" className="text-green-600 hover:text-green-500">
-              Sign in
-            </Link>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                  placeholder="John Doe"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                  placeholder="your@email.com"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({...formData, password: e.target.value})}
+                  required
+                  minLength={6}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                  placeholder="••••••••"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  I am a
+                </label>
+                <select
+                  value={formData.role}
+                  onChange={(e) => setFormData({...formData, role: e.target.value})}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                >
+                  <option value="CUSTOMER">Customer</option>
+                  <option value="FARMER">Farmer</option>
+                </select>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50"
+              >
+                {loading ? 'Creating account...' : 'Sign Up'}
+              </button>
+            </form>
+
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600">
+                Already have an account?{' '}
+                <Link href="/auth/signin" className="text-green-600 hover:text-green-700 font-semibold">
+                  Sign in
+                </Link>
+              </p>
+            </div>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </div>
+    </>
   )
 }

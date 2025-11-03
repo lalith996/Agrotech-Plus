@@ -7,8 +7,8 @@ interface Farmer {
   id: string;
   farmName: string;
   isApproved: boolean;
-  user: {
-    name: string;
+  users: {
+    name: string | null;
     email: string;
   };
   _count: {
@@ -78,7 +78,7 @@ const AdminFarmersPage = () => {
             <div key={farmer.id} style={{ border: '1px solid #ddd', padding: '1rem', borderRadius: '8px', display: 'grid', gridTemplateColumns: '3fr 2fr 1fr 1fr', alignItems: 'center' }}>
               <div>
                 <strong>{farmer.farmName}</strong>
-                <p style={{ margin: 0, color: '#555' }}>{farmer.user.name} ({farmer.user.email})</p>
+                <p style={{ margin: 0, color: '#555' }}>{farmer.users?.name || 'No name'} ({farmer.users?.email})</p>
               </div>
               <div>
                 <strong>Status:</strong>
