@@ -111,21 +111,29 @@ export default async function handler(
         },
       })
 
-      // Calculate average rating for each product
-      const productsWithRating = await Promise.all(
-        products.map(async (product) => {
-          const reviews = await prisma.productReview.aggregate({
-            where: { productId: product.id },
-            _avg: { rating: true },
-          });
+      // Fetch all ratings in a single query using groupBy
+      const productIds = products.map(p => p.id)
+      const ratingsGrouped = await prisma.productReview.groupBy({
+        by: ['productId'],
+        where: {
+          productId: { in: productIds },
+        },
+        _avg: {
+          rating: true,
+        },
+      })
 
-          return {
-            ...product,
-            rating: reviews._avg.rating || 0,
-            reviewCount: product._count.reviews,
-          };
-        })
-      );
+      // Create a map for O(1) lookup
+      const ratingsMap = new Map(
+        ratingsGrouped.map(r => [r.productId, r._avg.rating || 0])
+      )
+
+      // Combine products with their ratings
+      const productsWithRating = products.map(product => ({
+        ...product,
+        rating: ratingsMap.get(product.id) || 0,
+        reviewCount: product._count.reviews,
+      }));
 
       // Get total count for pagination
       const total = await prisma.product.count({ where })

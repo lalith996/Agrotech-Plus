@@ -146,14 +146,25 @@ export async function hardDelete<T extends SoftDeleteModel>(
       throw new Error(`Model ${model} not found`);
     }
 
-    // Use $executeRawUnsafe to bypass middleware
+    // Use parameterized query to prevent SQL injection
     const tableName = model.toLowerCase();
-    const whereClause = Object.entries(where)
-      .map(([key, value]) => `${key} = '${value}'`)
+    const whereKeys = Object.keys(where);
+    const whereValues = Object.values(where);
+
+    if (whereKeys.length === 0) {
+      throw new Error('Where clause cannot be empty for hard delete');
+    }
+
+    // Build parameterized WHERE clause: column1 = $1 AND column2 = $2
+    const whereClause = whereKeys
+      .map((key, index) => `"${key}" = $${index + 1}`)
       .join(' AND ');
 
-    await prisma.$executeRawUnsafe(
-      `DELETE FROM "${tableName}" WHERE ${whereClause}`
+    // Use $executeRaw with template literal for safe parameterized query
+    await prisma.$executeRaw(
+      Prisma.sql([
+        `DELETE FROM "${tableName}" WHERE ${whereClause}`,
+      ] as any as TemplateStringsArray, ...whereValues)
     );
 
     return true;
@@ -277,10 +288,12 @@ export async function purgeOldDeleted<T extends SoftDeleteModel>(
   try {
     const tableName = model.toLowerCase();
 
-    const result = await prisma.$executeRawUnsafe(
-      `DELETE FROM "${tableName}" WHERE "deletedAt" IS NOT NULL AND "deletedAt" < $1`,
-      cutoffDate
-    );
+    // Use parameterized query with $executeRaw for safety
+    const result = await prisma.$executeRaw`
+      DELETE FROM ${Prisma.raw(`"${tableName}"`)}
+      WHERE "deletedAt" IS NOT NULL
+      AND "deletedAt" < ${cutoffDate}
+    `;
 
     logInfo('Purge completed', {
       model,

@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
+import { initializeServer } from './lib/server-init'
+
+// Initialize server-side services (runs once on server start)
+try {
+  initializeServer()
+} catch (error) {
+  console.error('Failed to initialize server:', error)
+  // Continue running but log the error
+}
 
 // Rate limiting store (in production, use Redis)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
@@ -16,10 +25,17 @@ export async function middleware(request: NextRequest) {
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
   
   // Content Security Policy
+  // Note: In development, we allow unsafe-inline for hot reload
+  // In production, use nonces or hashes for inline scripts/styles
+  const isDev = process.env.NODE_ENV === 'development'
   const csp = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    isDev
+      ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'" // Allow for dev hot reload
+      : "script-src 'self'", // Strict in production - use nonces/hashes
+    isDev
+      ? "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"
+      : "style-src 'self' https://fonts.googleapis.com", // Strict in production
     "img-src 'self' data: https:",
     "font-src 'self' data: https://fonts.gstatic.com",
     "connect-src 'self'",

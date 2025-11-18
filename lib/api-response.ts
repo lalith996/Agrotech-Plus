@@ -321,9 +321,20 @@ export function responseMiddleware(
 
   // CORS headers (if needed)
   if (process.env.CORS_ENABLED === 'true') {
-    res.setHeader('Access-Control-Allow-Origin', process.env.CORS_ORIGIN || '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token');
+    // In production, CORS_ORIGIN is required - never default to '*'
+    const corsOrigin = process.env.CORS_ORIGIN ||
+      (process.env.NODE_ENV === 'production'
+        ? undefined // Will cause header not to be set in production
+        : 'http://localhost:3000'); // Safe default for development
+
+    if (corsOrigin) {
+      res.setHeader('Access-Control-Allow-Origin', corsOrigin);
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token');
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+    } else if (process.env.NODE_ENV === 'production') {
+      logWarn('CORS_ENABLED is true but CORS_ORIGIN is not set in production');
+    }
   }
 
   next();

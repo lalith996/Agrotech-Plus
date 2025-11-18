@@ -86,6 +86,7 @@ model User {
   role          UserRole  @default(CUSTOMER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime? // Soft delete timestamp
 
   accounts           Account[]
   sessions           Session[]
@@ -97,6 +98,8 @@ model User {
   preferences        UserPreference?
   notifications      NotificationLog[]
 
+  @@index([deletedAt])
+  @@index([email, deletedAt])
   @@map("users")
 }
 
@@ -114,6 +117,7 @@ model Customer {
   phone     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  deletedAt DateTime? // Soft delete timestamp
 
   user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   addresses     Address[]
@@ -121,6 +125,7 @@ model Customer {
   orders        Order[]
   reviews       ProductReview[]
 
+  @@index([deletedAt])
   @@map("customers")
 }
 
@@ -134,6 +139,7 @@ model Farmer {
   isApproved    Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  deletedAt     DateTime? // Soft delete timestamp
 
   user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   products       Product[]
@@ -141,6 +147,7 @@ model Farmer {
   deliveries     FarmerDelivery[]
   qcResults      QCResult[]
 
+  @@index([deletedAt])
   @@map("farmers")
 }
 
@@ -155,10 +162,12 @@ model Address {
   isDefault  Boolean @default(false)
   latitude   Float?
   longitude  Float?
+  deletedAt  DateTime? // Soft delete timestamp
 
   customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   orders   Order[]
 
+  @@index([deletedAt])
   @@map("addresses")
 }
 
@@ -174,6 +183,7 @@ model Product {
   farmerId    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  deletedAt   DateTime? // Soft delete timestamp
 
   farmer            Farmer             @relation(fields: [farmerId], references: [id], onDelete: Cascade)
   subscriptionItems SubscriptionItem[]
@@ -185,6 +195,8 @@ model Product {
   @@index([category])
   @@index([isActive])
   @@index([createdAt])
+  @@index([deletedAt])
+  @@index([farmerId, deletedAt])
   @@map("products")
 }
 
@@ -196,6 +208,7 @@ model ProductReview {
   comment    String?  @db.Text
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  deletedAt  DateTime? // Soft delete timestamp
 
   product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
@@ -203,6 +216,7 @@ model ProductReview {
   @@unique([productId, customerId]) // One review per customer per product
   @@index([productId])
   @@index([customerId])
+  @@index([deletedAt])
   @@map("product_reviews")
 }
 
@@ -218,11 +232,14 @@ model Subscription {
   pausedUntil  DateTime?
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
+  deletedAt    DateTime?          // Soft delete timestamp
 
   customer Customer          @relation(fields: [customerId], references: [id], onDelete: Cascade)
   items    SubscriptionItem[]
   orders   Order[]
 
+  @@index([status])
+  @@index([deletedAt])
   @@map("subscriptions")
 }
 
@@ -252,6 +269,7 @@ model Order {
   specialNotes     String?
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
+  deletedAt        DateTime?   // Soft delete timestamp
 
   customer     Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
   subscription Subscription? @relation(fields: [subscriptionId], references: [id])
@@ -264,19 +282,22 @@ model Order {
   @@index([status])
   @@index([deliveryDate])
   @@index([createdAt])
+  @@index([deletedAt])
   @@map("orders")
 }
 
 model OrderItem {
-  id       String @id @default(cuid())
-  orderId  String
+  id        String    @id @default(cuid())
+  orderId   String
   productId String
-  quantity Float
-  price    Float
+  quantity  Float
+  price     Float
+  deletedAt DateTime? // Soft delete timestamp
 
   order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id])
 
+  @@index([deletedAt])
   @@map("order_items")
 }
 
