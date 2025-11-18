@@ -6,17 +6,50 @@ import { prisma } from "@/lib/prisma";
 import { UserRole, OrderStatus } from "@prisma/client";
 import { sendEmail } from "@/lib/sendgrid";
 import { sendSms } from "@/lib/twilio";
+import { XSSProtection } from "@/lib/security";
+import { logError } from "@/lib/logger";
 
-const formatOrderForEmail = (order: any) => {
-  const itemsList = order.items.map((item: any) => 
-    `<li>${item.product.name} (Qty: ${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}</li>`
-  ).join('');
+// Type for order item
+interface OrderItemType {
+  product: {
+    name: string
+  }
+  quantity: number
+  price: number
+}
+
+// Type for order email
+interface OrderForEmail {
+  id: string
+  status: OrderStatus
+  deliveryDate: Date
+  totalAmount: number
+  address: {
+    street: string
+    city: string
+  }
+  items: OrderItemType[]
+}
+
+const formatOrderForEmail = (order: OrderForEmail): string => {
+  // Sanitize all dynamic content to prevent XSS
+  const itemsList = order.items.map((item) => {
+    const productName = XSSProtection.encodeHtml(item.product.name);
+    const total = (item.price * item.quantity).toFixed(2);
+    return `<li>${productName} (Qty: ${item.quantity}) - $${total}</li>`;
+  }).join('');
+
+  const orderId = XSSProtection.encodeHtml(order.id);
+  const street = XSSProtection.encodeHtml(order.address.street);
+  const city = XSSProtection.encodeHtml(order.address.city);
+  const deliveryDate = new Date(order.deliveryDate).toLocaleDateString();
+
   return `
-    <h1>Order Confirmation #${order.id}</h1>
+    <h1>Order Confirmation #${orderId}</h1>
     <p>Thank you for your order!</p>
     <p><strong>Status:</strong> ${order.status}</p>
-    <p><strong>Delivery Date:</strong> ${new Date(order.deliveryDate).toLocaleDateString()}</p>
-    <p><strong>Delivery Address:</strong> ${order.address.street}, ${order.address.city}</p>
+    <p><strong>Delivery Date:</strong> ${deliveryDate}</p>
+    <p><strong>Delivery Address:</strong> ${street}, ${city}</p>
     <h3>Items:</h3>
     <ul>${itemsList}</ul>
     <h3>Total: $${order.totalAmount.toFixed(2)}</h3>
@@ -121,7 +154,10 @@ export default async function handler(
         },
       });
     } catch (error) {
-      // console.error("Orders fetch error:", error);
+      logError("Orders fetch error", error instanceof Error ? error : new Error(String(error)), {
+        userId: session.user.id,
+        role: session.user.role,
+      })
       res.status(500).json({ message: "Internal server error" });
     }
   } else if (req.method === "POST") {

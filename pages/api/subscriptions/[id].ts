@@ -3,6 +3,14 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { UserRole, SubscriptionStatus } from "@prisma/client"
+import { logError } from "@/lib/logger"
+
+// Type for subscription item update
+interface SubscriptionItemInput {
+  productId: string
+  quantity: number
+  frequency?: string
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -64,7 +72,10 @@ export default async function handler(
 
       res.status(200).json({ subscription })
     } catch (error) {
-      // console.error("Subscription fetch error:", error)
+      logError("Subscription fetch error", error instanceof Error ? error : new Error(String(error)), {
+        subscriptionId: id,
+        customerId: customer.id,
+      })
       res.status(500).json({ message: "Internal server error" })
     }
   } else if (req.method === "PUT") {
@@ -136,7 +147,7 @@ export default async function handler(
 
             // Create new items
             await tx.subscriptionItem.createMany({
-              data: items.map((item: any) => ({
+              data: (items as SubscriptionItemInput[]).map((item) => ({
                 subscriptionId: id,
                 productId: item.productId,
                 quantity: item.quantity,
@@ -178,7 +189,11 @@ export default async function handler(
         message: "Subscription updated successfully",
       })
     } catch (error) {
-      // console.error("Subscription update error:", error)
+      logError("Subscription update error", error instanceof Error ? error : new Error(String(error)), {
+        subscriptionId: id,
+        customerId: customer.id,
+        action: req.body.action,
+      })
 
       if (error instanceof Error) {
         return res.status(400).json({ message: error.message })
@@ -210,7 +225,10 @@ export default async function handler(
 
       res.status(200).json({ message: "Subscription cancelled successfully" })
     } catch (error) {
-      // console.error("Subscription deletion error:", error)
+      logError("Subscription deletion error", error instanceof Error ? error : new Error(String(error)), {
+        subscriptionId: id,
+        customerId: customer.id,
+      })
       res.status(500).json({ message: "Internal server error" })
     }
   } else {

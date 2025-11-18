@@ -99,8 +99,10 @@ model User {
   notifications      NotificationLog[]
 
   @@index([deletedAt])
+  @@index([role])
   @@index([email, deletedAt])
   @@map("users")
+  @@index([role, deletedAt])
 }
 
 model VerificationToken {
